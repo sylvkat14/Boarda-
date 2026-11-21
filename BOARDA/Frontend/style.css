@@ -1,0 +1,1136 @@
+/* =====================================================
+   BOARDA — style.css  (responsive: phone, tablet, desktop)
+   Colours, type and component values come from the UI/UX spec.
+   Mobile-first: base styles = 390px phone design.
+   Breakpoints:  768px = tablet,  1024px = desktop
+   ===================================================== */
+
+/* Font loads here so every page gets it (you can delete the <link> in index.html) */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+
+/* ---------- 1. Design tokens ---------- */
+:root {
+  --bg: #FAF8F3;
+  --text: #232826;
+  --text-soft: #4A524E;
+  --text-muted: #6B726E;
+  --green: #1F5C3F;
+  --green-tint: #E6EFE9;
+  --green-photo: #CFE0D5;
+  --orange: #C4500C;
+  --orange-dark: #A94209;      /* hover state (not in spec, darker orange) */
+  --white: #FFFFFF;
+  --border: #E4E1D8;
+  --border-mid: #D9D6CC;
+
+  --max: 1200px;               /* widest the page content gets */
+  --gutter: 20px;              /* side padding, grows on bigger screens */
+}
+
+
+/* ---------- 2. Reset and base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button, input, select, textarea { font-family: inherit; }
+
+img { max-width: 100%; height: auto; }
+
+a { color: var(--green); }
+
+:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
+}
+
+
+/* ---------- 3. Page layout ---------- */
+/* The body is the centred container; header, nav, main and footer sit inside it */
+body {
+  max-width: var(--max);
+  margin-inline: auto;
+}
+
+body > header { padding: 20px var(--gutter) 8px; }
+body > nav    { padding: 8px var(--gutter) 12px; }
+main          { min-width: 0; padding: 8px var(--gutter) 32px; }
+
+/* Spacer <br> tags in main and forms are replaced by CSS spacing */
+main > br, form br { display: none; }
+
+
+/* ---------- 4. Header and primary navigation ---------- */
+body > header a { display: inline-block; }
+
+/* Overrides the width/height attributes on the logo <img> */
+body > header img {
+  display: block;
+  width: auto;
+  height: 44px;
+  max-width: 100%;
+}
+
+/* Phone nav = one scrolling row of pills (same look as the spec's filter chips) */
+body > nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+body > nav::-webkit-scrollbar { display: none; }
+
+body > nav a {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--border-mid);
+  border-radius: 22px;
+  background: var(--white);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+body > nav a:hover { border-color: var(--green); }
+
+.session-greeting {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+body > nav .nav-logout {
+  flex: none;
+  width: auto;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 16px;
+  border: 1px solid var(--border-mid);
+  border-radius: 22px;
+  background: var(--white);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+body > nav .nav-logout:hover { border-color: var(--green); background: var(--green-tint); color: var(--green); }
+
+/* Add aria-current="page" to the link of the page you are on */
+body > nav a[aria-current="page"] {
+  border-color: var(--green);
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+
+/* ---------- 5. Typography ---------- */
+h1 { margin: 12px 0 0; font-size: 30px; font-weight: 800; line-height: 1.15; }
+h2 { margin: 26px 0 10px; font-size: 19px; font-weight: 800; line-height: 1.25; }
+h3 { margin: 20px 0 10px; font-size: 18px; font-weight: 700; line-height: 1.3; }
+h4 { margin: 16px 0 6px; font-size: 16px; font-weight: 700; }
+
+p {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-soft);
+}
+
+/* Use on the h3/p that sits directly under a page headline */
+.subtitle {
+  margin: 10px 0 0;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--text-soft);
+}
+
+ul, ol {
+  margin: 0 0 16px;
+  padding-left: 22px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-soft);
+}
+
+li { margin-bottom: 6px; }
+li::marker { color: var(--green); font-weight: 700; }
+
+/* Keep reading lines under ~70 characters */
+main > p, main > ul, main > ol { max-width: 68ch; }
+
+/* Numbered steps with green circles — add class="steps" to the <ol> */
+.steps { list-style: none; padding: 0; counter-reset: step; }
+
+.steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+  counter-increment: step;
+}
+
+.steps li::before {
+  content: counter(step);
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  background: var(--green);
+  color: var(--white);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+
+/* ---------- 6. Buttons ---------- */
+button,
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 12px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--orange);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button:hover,
+.btn-primary:hover { background: var(--orange-dark); }
+
+/* Keeps your current <button><a>…</a></button> markup clickable across the whole button */
+button a {
+  flex: 1;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 -24px;
+  padding: 0 24px;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Filter chips */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  min-height: 44px;
+  margin-top: 0;
+  padding: 0 18px;
+  border: 1px solid var(--border-mid);
+  border-radius: 22px;
+  background: var(--white);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.chip:hover { background: var(--white); border-color: var(--green); }
+
+.chip-active,
+.chip-active:hover {
+  border-color: var(--green);
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+
+/* ---------- 7. Forms (search, filters, login, register) ---------- */
+label {
+  display: block;
+  margin: 14px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+select {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1.5px solid var(--border-mid);
+  border-radius: 14px;
+  background: var(--white);
+  font-size: 15px;
+  color: var(--text);
+}
+
+input:focus, select:focus { border-color: var(--green); }
+
+/* Home search box = the spec's search bar */
+form[role="search"] input[type="text"] {
+  height: 52px;
+  border-color: var(--green);
+  color: var(--text);
+}
+
+/* Optional search bar with an icon: <div class="search"><svg/><input></div> */
+.search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 16px;
+  background: var(--white);
+  border: 1.5px solid var(--green);
+  border-radius: 14px;
+  color: var(--green);
+}
+
+.search input {
+  flex: 1;
+  height: auto;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 15px;
+  color: var(--text);
+}
+
+fieldset {
+  min-width: 0;
+  margin: 16px 0 0;
+  padding: 4px 16px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--white);
+}
+
+legend { padding: 0 6px; font-size: 14px; font-weight: 700; color: var(--text); }
+
+/* Radio and checkbox rows */
+input[type="checkbox"],
+input[type="radio"] {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0 8px 0 0;
+  vertical-align: middle;
+  accent-color: var(--green);
+}
+
+input[type="checkbox"] + label,
+input[type="radio"] + label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0 16px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Submit buttons inside forms */
+form button[type="submit"] { margin-top: 20px; }
+
+main > form { max-width: 480px; }
+
+main > form p { margin-top: 14px; }
+
+
+/* ---------- 8. Cards and badges ---------- */
+.card {
+  margin: 20px 0 0;
+  padding: 20px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.card h3 { margin: 0; font-size: 17px; font-weight: 800; }
+
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 12px;
+  background: var(--green);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tag {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 10px;
+  background: var(--green-tint);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Listing card (Home featured listings, Listings results) */
+.listings-card,
+.listing-card {
+  margin: 0 0 16px;
+  overflow: hidden;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.listings-card img,
+.listing-card img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  object-position: center;
+  background: var(--green-photo);
+}
+
+.listings-card h3,
+.listing-card h3 { margin: 14px 0 0; padding: 0 16px; font-size: 17px; font-weight: 700; }
+
+.location { margin: 4px 0 0; padding: 0 16px; font-size: 13px; color: var(--text-soft); }
+
+.price { margin: 8px 0 0; padding: 0 16px; font-size: 18px; font-weight: 800; color: var(--green); }
+
+.listings-card a,
+.listing-card a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin: 14px 16px 16px;
+  border-radius: 12px;
+  background: var(--orange);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.listings-card a:hover,
+.listing-card a:hover { background: var(--orange-dark); }
+
+/* Homepage featured homes */
+.featured-listings { margin: 36px 0 0; }
+.featured-listings > h2 { margin: 0 0 16px; }
+.featured-listings .listings-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+.featured-listings .listings-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100%;
+  margin: 0;
+  border-radius: 18px;
+  box-shadow: 0 5px 18px rgba(35, 40, 38, .06);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.featured-listings .listings-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-mid);
+  box-shadow: 0 12px 26px rgba(35, 40, 38, .11);
+}
+.featured-listings .card-image {
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  background: var(--green-tint);
+}
+.featured-listings .card-image img {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  object-fit: contain;
+  object-position: center;
+}
+.featured-listings .listings-card > h3 {
+  min-height: 44px;
+  margin-top: 12px;
+  padding-inline: 14px;
+  font-size: 16px;
+  line-height: 1.45;
+}
+.featured-listings .listings-card .location {
+  min-height: 36px;
+  margin-top: 4px;
+  padding-inline: 14px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.featured-listings .listings-card .price {
+  margin-top: 6px;
+  padding-inline: 14px;
+  color: var(--green);
+  font-size: 19px;
+}
+.featured-listings .listings-card .price span {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+.featured-listings .listings-card a {
+  min-height: 42px;
+  margin: auto 14px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+
+/* ---------- 9. Hero banner (About Us) ----------
+   Wrap the About headline + first paragraph in <section class="hero"> */
+.hero {
+  margin: 8px 0 0;
+  padding: 26px 22px;
+  background: var(--green);
+  border-radius: 20px;
+  color: var(--white);
+}
+
+.hero h1 { margin: 0; font-size: 26px; font-weight: 800; line-height: 1.2; color: var(--white); }
+
+.hero p { margin: 12px 0 0; font-size: 15px; line-height: 1.5; color: var(--green-tint); }
+
+/* Home hero: bold intro beside a five-photo boarding house collage */
+.home-hero {
+  display: grid;
+  gap: 28px;
+  align-items: center;
+  margin: 8px 0 28px;
+}
+
+.home-hero-copy { padding: 12px 0; }
+.home-hero-copy .eyebrow {
+  margin: 0 0 12px;
+  color: var(--orange);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.home-hero-copy h1 { max-width: 17ch; margin: 0; font-size: clamp(34px, 8vw, 56px); line-height: 1.05; }
+.home-hero-copy > p:not(.eyebrow) { max-width: 48ch; margin: 18px 0 0; font-size: 16px; }
+.hero-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 50px;
+  margin-top: 24px;
+  padding: 0 20px;
+  border-radius: 12px;
+  background: var(--green);
+  color: var(--white);
+  font-weight: 700;
+  text-decoration: none;
+}
+.hero-link:hover { background: #16472f; }
+.hero-link span { font-size: 20px; }
+
+.hero-gallery {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  grid-template-rows: repeat(2, minmax(82px, 1fr));
+  gap: 8px;
+  min-height: 245px;
+  overflow: hidden;
+  border-radius: 22px;
+}
+.hero-photo { display: block; width: 100%; height: 100%; min-height: 0; object-fit: cover; background: var(--green-photo); }
+.hero-photo-main { grid-row: 1 / 3; }
+.hero-photo-two { grid-column: 2; grid-row: 1; }
+.hero-photo-three { grid-column: 3; grid-row: 1; }
+.hero-photo-four { grid-column: 2; grid-row: 2; }
+.hero-photo-five { grid-column: 3; grid-row: 2; }
+.gallery-note {
+  grid-column: 2 / 4;
+  grid-row: 2;
+  z-index: 1;
+  align-self: end;
+  justify-self: end;
+  margin: 0 8px 8px 0;
+  padding: 7px 10px;
+  border-radius: 9px;
+  background: rgba(255,255,255,.94);
+  color: var(--text);
+  font-size: 10px;
+}
+.gallery-note strong { color: var(--green); }
+
+@media (min-width: 768px) {
+  .home-hero { grid-template-columns: .9fr 1.1fr; gap: 28px; margin-top: 22px; margin-bottom: 40px; }
+  .hero-gallery { min-height: 330px; gap: 10px; border-radius: 26px; }
+  .gallery-note { margin: 0 10px 10px 0; padding: 9px 12px; font-size: 12px; }
+}
+
+@media (min-width: 1024px) {
+  .home-hero { grid-template-columns: .85fr 1.15fr; gap: 48px; margin-top: 34px; }
+  .home-hero-copy h1 { font-size: 58px; }
+  .hero-gallery { min-height: 440px; gap: 12px; border-radius: 30px; }
+}
+
+
+/* ---------- 10. Layout helpers (add these wrappers in the HTML) ---------- */
+
+/* Home intro: <section class="intro"> headline + paragraph + subtitle </section> */
+.intro { padding: 8px 0 4px; }
+
+/* Home search: one <form class="search-panel"> holding .field wrappers + the button */
+.search-panel {
+  display: grid;
+  gap: 0 16px;
+  max-width: none;
+  margin-top: 18px;
+  padding: 4px 16px 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.search-panel .field { min-width: 0; }
+
+/* Three-up info cards (Why Boarda, About values): <ul class="features"> */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  max-width: none;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.features li {
+  margin: 0;
+  padding: 20px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.features h3 { margin: 0 0 6px; font-size: 17px; font-weight: 800; }
+.features p  { margin: 0; font-size: 14px; }
+
+/* Steps as a row of cards (Home, How It Works): <ol class="steps steps-row"> */
+.steps-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  max-width: none;
+}
+
+.steps-row li {
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 20px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+/* Grid of listing cards: <div class="listings-grid"> <article>…</article> </div> */
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.listings-grid .listings-card,
+.listings-grid .listing-card { margin: 0; }
+
+/* Side-by-side blocks (About mission + vision): <div class="two-col"> two .card </div> */
+.two-col { display: grid; gap: 16px; }
+.two-col .card { margin: 0; }
+
+/* Green call-to-action band (Landlords): <section class="cta-band"> h2, p, a.btn-primary </section> */
+.cta-band {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 32px 0 0;
+  padding: 28px 22px;
+  background: var(--green);
+  border-radius: 20px;
+  color: var(--white);
+}
+
+.cta-band h2,
+.cta-band h3 { margin: 0; color: var(--white); }
+
+.cta-band p { margin: 6px 0 0; color: var(--green-tint); }
+
+.cta-band .btn-primary,
+.cta-band button { margin-top: 0; }
+
+/* Login / Register: <section class="auth-card"> h1, subtitle, form </section> */
+.auth-card { margin: 8px auto 0; max-width: 480px; }
+.auth-card form { max-width: none; }
+.password-field { position: relative; }
+.password-field > input { padding-right: 84px; }
+.password-field > .password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: auto;
+  min-width: 60px;
+  min-height: 36px;
+  margin: 0;
+  padding: 0 10px;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 700;
+}
+.password-field > .password-toggle:hover { background: var(--green-tint); }
+.terms-row { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+.terms-row input[type="checkbox"] { margin: 0; }
+.terms-row label { margin: 0; font-size: 13px; }
+.auth-status {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--green-tint);
+  color: var(--green);
+  font-size: 14px;
+}
+.auth-status[hidden] { display: none; }
+
+/* Listings page: <div class="listings-layout"> <aside> filters </aside> <div class="results"> … </div> </div> */
+.listings-layout { display: grid; gap: 20px; }
+
+/* Listing detail: <div class="detail"> <div> gallery </div> <div> info </div> </div> */
+.detail { display: grid; gap: 20px; }
+
+
+/* ---------- 11. Listings page pieces ---------- */
+aside {
+  padding: 4px 16px 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+p[aria-live] { margin: 16px 0 10px; font-size: 14px; color: var(--text-soft); }
+
+/* Photo gallery */
+figure {
+  margin: 0 0 12px;
+  overflow: hidden;
+  background: var(--green-photo);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+figure img { display: block; width: 100%; height: 200px; object-fit: cover; }
+
+figcaption { padding: 10px 16px; background: var(--white); font-size: 14px; font-weight: 600; }
+
+.thumbnails { display: flex; gap: 8px; margin-bottom: 8px; overflow-x: auto; }
+
+.thumbnails button {
+  flex: none;
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-mid);
+  border-radius: 12px;
+  background: var(--white);
+}
+
+.thumbnails button:hover { background: var(--white); border-color: var(--green); }
+
+.thumbnails img { display: block; width: 104px; height: 84px; object-fit: cover; }
+
+/* Listings page galleries: keep the lead photo and preview tiles compact */
+.listings-page > figure {
+  width: 100%;
+  max-width: none;
+  margin: 0 0 8px;
+  border-radius: 16px;
+}
+
+.listings-page > figure .listing-photo {
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  margin-inline: auto;
+  overflow: hidden;
+  background: #F1F2EE;
+}
+
+.listings-page > figure .listing-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  background: #F1F2EE;
+}
+
+.listings-page > figure figcaption { padding: 9px 14px; font-size: 13px; }
+
+.listings-page > .thumbnails {
+  width: 100%;
+  max-width: none;
+  gap: 10px;
+  margin: 0 0 24px;
+}
+
+.listings-page > .thumbnails button {
+  flex: 0 0 98px;
+  width: 98px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-mid);
+  border-radius: 10px;
+  background: #F1F2EE;
+  line-height: 0;
+  transition: border-color .18s ease, transform .18s ease;
+}
+
+.listings-page > .thumbnails button:hover {
+  border-color: var(--green);
+  transform: translateY(-2px);
+}
+
+.listings-page > .thumbnails img {
+  width: 96px;
+  height: 72px;
+  border-radius: 9px;
+  object-fit: contain;
+  object-position: center;
+  background: #F1F2EE;
+}
+
+.listings-page > .thumbnails button[aria-pressed="true"] {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px var(--green-tint);
+}
+
+.listings-page [hidden] { display: none !important; }
+
+/* Amenities list shown as tags */
+section[aria-labelledby="amenities-heading"] ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: none;
+  padding: 0;
+  list-style: none;
+}
+
+section[aria-labelledby="amenities-heading"] li {
+  margin: 0;
+  padding: 5px 10px;
+  border-radius: 10px;
+  background: var(--green-tint);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Landlord contact details */
+dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin: 0 0 16px;
+  padding: 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+dt { font-size: 13px; font-weight: 600; color: var(--text-soft); }
+dd { margin: 0; font-size: 14px; font-weight: 600; }
+
+/* Listing row card (spec's Listings screen) */
+.listing-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.listing-row .thumb {
+  flex: none;
+  width: 104px;
+  height: 112px;
+  border-radius: 12px;
+  background: var(--green-photo);
+  object-fit: cover;
+}
+
+.listing-row .row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.listing-row h3 { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.25; }
+
+.listing-row .location { margin-top: 2px; padding: 0; font-size: 12.5px; }
+
+.listing-row .price { margin-top: 6px; padding: 0; font-size: 17px; }
+
+.listing-row .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; }
+
+
+/* ---------- 12. Footer ---------- */
+body > footer {
+  margin: 24px var(--gutter) 0;
+  padding: 20px 0 28px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+footer nav { display: flex; flex-wrap: wrap; gap: 0 18px; margin-bottom: 12px; }
+
+footer nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+}
+
+footer nav a:hover { text-decoration: underline; }
+
+footer br { display: none; }
+
+
+/* ---------- 13. Optional bottom tab bar (from the spec) ----------
+   Not used by the current pages; ready if the team adds a phone tab bar */
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 72px;
+  padding: 0 8px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 80px;
+  height: 56px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.nav-item.active { color: var(--green); font-weight: 700; }
+
+
+/* =====================================================
+   TABLET  (768px and up)
+   ===================================================== */
+@media (min-width: 768px) {
+  :root { --gutter: 32px; }
+
+  body { font-size: 16px; }
+
+  body > header { padding-top: 28px; }
+
+  /* Nav wraps instead of scrolling */
+  body > nav { flex-wrap: wrap; overflow-x: visible; }
+
+  main { padding-bottom: 48px; }
+
+  h1 { font-size: 38px; }
+  h2 { font-size: 22px; }
+  h3 { font-size: 19px; }
+
+  p, ul, ol, .subtitle { font-size: 16px; line-height: 1.6; }
+
+  button,
+  .btn-primary { width: auto; min-width: 220px; }
+
+  form button[type="submit"] { width: 100%; }
+
+  /* Hero banner */
+  .hero { padding: 40px 36px; }
+  .hero h1 { font-size: 32px; }
+  .hero p { max-width: 60ch; font-size: 16px; }
+
+  /* Home search panel: location on its own row, prices side by side */
+  .search-panel { grid-template-columns: 1fr 1fr; padding: 8px 20px 20px; }
+  .search-panel .field:first-child { grid-column: 1 / -1; }
+  .search-panel button[type="submit"] { grid-column: 1 / -1; width: 100%; }
+
+  /* Cards */
+  .listings-card img,
+  .listing-card img { height: 160px; }
+
+  .two-col { grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+
+  .cta-band {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 36px 40px;
+  }
+
+  /* Login / Register become a centred card */
+  .auth-card {
+    margin-top: 24px;
+    padding: 32px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+  }
+
+  figure img { height: 300px; }
+
+  /* Footer: links left, copyright right */
+  body > footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 24px;
+  }
+
+  footer nav { margin-bottom: 0; }
+}
+
+
+/* =====================================================
+   DESKTOP  (1024px and up)
+   ===================================================== */
+@media (min-width: 1024px) {
+  :root { --gutter: 40px; }
+
+  /* Header bar: logo on the left, nav on the right */
+  body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: stretch;
+  }
+
+  body > header,
+  body > nav {
+    display: flex;
+    align-items: center;
+    padding-block: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  body > nav { justify-content: flex-end; gap: 4px; }
+
+  body > main,
+  body > footer { grid-column: 1 / -1; }
+
+  /* Desktop nav = plain links with a tinted hover/active state */
+  body > nav a { border-color: transparent; background: transparent; }
+
+  body > nav a:hover,
+  body > nav a[aria-current="page"] {
+    border-color: transparent;
+    background: var(--green-tint);
+    color: var(--green);
+  }
+
+  /* Type */
+  h1 { font-size: 46px; }
+  h2 { font-size: 26px; }
+  h3 { font-size: 20px; }
+
+  .hero { padding: 56px 56px; }
+  .hero h1 { max-width: 20ch; font-size: 40px; }
+  .hero p { font-size: 18px; }
+
+  /* Home intro */
+  .intro { max-width: 760px; padding: 48px 0 12px; }
+  .intro h1 { font-size: 52px; line-height: 1.1; }
+  .intro p { font-size: 18px; }
+
+  /* Home search panel: everything in one row */
+  .search-panel {
+    grid-template-columns: 2fr 1fr 1fr auto;
+    align-items: end;
+    padding: 20px;
+  }
+
+  .search-panel .field:first-child,
+  .search-panel button[type="submit"] { grid-column: auto; }
+
+  .search-panel .field label { margin-top: 0; }
+
+  .search-panel button[type="submit"] {
+    width: auto;
+    min-width: 160px;
+    height: 52px;
+    margin-top: 0;
+  }
+
+  /* Cards */
+  .listings-card img,
+  .listing-card img { height: 180px; }
+
+  .features li,
+  .steps-row li { padding: 24px; }
+
+  /* Listings page: filters on the left, results on the right */
+  .listings-layout {
+    grid-template-columns: 300px 1fr;
+    align-items: start;
+    gap: 32px;
+  }
+
+  .listings-layout aside { position: sticky; top: 24px; }
+
+  /* Listing detail: gallery left, info right */
+  .detail { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+
+  figure img { height: 400px; }
+
+  .auth-card { margin-top: 40px; padding: 40px; }
+
+  .cta-band { padding: 44px 56px; }
+}

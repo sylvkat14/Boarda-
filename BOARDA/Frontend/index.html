@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+
+      <link rel="preconnect" href="https://fonts.googleapis.com"> 
+      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+      
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Boarda helps students find and compare boarding houses near their campus — search by location, price, and amenities.">
+      <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="style.css"/>
+      <title>Boarda</title>
+          <script src="auth-interactions.js" defer></script>
+    </head>
+    <body>
+      <header>
+        <a href="index.html"><img src="../Images/logo.png" alt="Website Logo" width="500" height="300"></a>
+      </header>
+      <nav aria-label="primary navigation">
+        
+        <a href="index.html">Home</a> &nbsp;&nbsp;
+        <a href="aboutUs.html">About Us</a> &nbsp;&nbsp;
+        <a href="listings.html">Listings</a> &nbsp;&nbsp;
+        <a href="register.html">Register</a> &nbsp;&nbsp;
+        <a href="login.html">Login</a> &nbsp;&nbsp;
+        <a href="howItworks.html">How It Works</a> &nbsp;&nbsp;
+      </nav>
+    
+      <main>
+        <section class="home-hero" aria-labelledby="home-hero-title">
+          <div class="home-hero-copy">
+            <p class="eyebrow">Your next chapter starts here</p>
+            <h1 id="home-hero-title">Find a boarding house near your campus — in minutes</h1>
+            <p>Find a place that fits your location, budget, and student life. Compare real homes and connect directly with landlords.</p>
+            <a class="hero-link" href="listings.html">Explore boarding houses <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="hero-gallery" aria-label="Photos of student boarding houses">
+            <img class="hero-photo hero-photo-main" src="../Images/gdflubansaBH.jpg" alt="Exterior of Lubansa Boarding House">
+            <img class="hero-photo hero-photo-two" src="../Images/katandaBH.jpeg" alt="Exterior of Katanda Boarding House">
+            <img class="hero-photo hero-photo-three" src="../Images/sunsetBH.jpg" alt="Exterior of Sunset Boarding House">
+            <img class="hero-photo hero-photo-four" src="../Images/chaniBH.jpg" alt="Boarding house in Chani">
+            <img class="hero-photo hero-photo-five" src="../Images/balendoBH.jpg" alt="Boarding house in Balendo">
+            <span class="gallery-note"><strong>Real homes.</strong> Ready for your next move.</span>
+          </div>
+        </section>
+        <form class="search-panel" role="search" action="listings.html" method="get">
+          <div class="field">
+            <label for="location">Campus or area</label>
+            <input type="search" id="location" name="location" placeholder="e.g. Northrise, Kalewa Road…">
+          </div>
+          <div class="field">
+            <label for="min-price">Min monthly price (ZMW)</label>
+            <input type="number" id="min-price" name="min_price" min="0" step="50" placeholder="Any">
+          </div>
+          <div class="field">
+            <label for="max-price">Max monthly price (ZMW)</label>
+            <input type="number" id="max-price" name="max_price" min="0" step="50" placeholder="Any">
+          </div>
+          <button type="submit">Search homes</button>
+        </form>
+        <h3>How It Works</h3>
+        <ol>
+          <li>Search - Enter your campus or area and your budget</li>
+          <li>Compare - Browse photos, prices, and amenities side by side</li>
+          <li>Contact - Reach the landlord directly to arrange visit</li>
+        </ol>
+
+        <section class="featured-listings" aria-labelledby="featured-listings-title">
+          <h2 id="featured-listings-title">Featured Listings</h2>
+          <div class="listings-grid">
+            <article class="listings-card">
+              <div class="card-image"><img src="../Images/gdflubansaBH.jpg" alt="Lubansa Boarding House"></div>
+              <h3>Lubansa Boarding House</h3>
+              <p class="location">Near Kalewa Barrack - Kalewa Road</p>
+              <p class="price">K1,200 <span>/ month</span></p>
+              <a href="listings.html?id=1" aria-label="View details for Lubansa Boarding House">View Details</a>
+            </article>
+            <article class="listings-card">
+              <div class="card-image"><img src="../Images/katandaBH.jpeg" alt="Katanda Boarding House"></div>
+              <h3>Katanda Boarding House</h3>
+              <p class="location">Mwatayamvo Road - Northrise</p>
+              <p class="price">K900 <span>/ month</span></p>
+              <a href="listings.html?id=2" aria-label="View details for Katanda Boarding House">View Details</a>
+            </article>
+            <article class="listings-card">
+              <div class="card-image"><img src="../Images/sunsetBH.jpg" alt="Sunset Boarding House"></div>
+              <h3>Sunset Boarding House</h3>
+              <p class="location">Breweries Road</p>
+              <p class="price">K1,500 <span>/ month</span></p>
+              <a href="listings.html?id=3" aria-label="View details for Sunset Boarding House">View Details</a>
+            </article>
+          </div>
+        </section>
+
+        <h3>Why Boarda?</h3>
+        <ul>
+          <li>No agent fees - Deal directly with landlords, keep more of your budget</li>
+          <li>"Real listings, real prices" - No guesswork, no hidden costs</li>
+          <li>"Search by campus" - Built around where you actually study</li>
+        </ul>
+
+        <h2>Landlords</h2>
+        <h4>List Your Property!</h4>
+        <p>Reach students actively searching for a place to stay near your property</p>
+        <button><a href="login.html">Get Started</a></button>
+        <br>
+        <br>
+      </main>
+      <footer>
+        <nav aria-label="footer navigation">
+          <a href="index.html">Home</a> &nbsp;&nbsp;
+          <a href="aboutUs.html">About Us</a> &nbsp;&nbsp;
+          <a href="listings.html">Listings</a> &nbsp;&nbsp;
+          <a href="register.html">Register</a> &nbsp;&nbsp;
+          <a href="login.html">Login</a> &nbsp;&nbsp;
+          <a href="howItWorks.html">How It Works</a> &nbsp;&nbsp;
+        </nav>
+        <br>
+        &copy; Boarda team 2026. All Rights Reserved.
+      </footer>
+    
+    </body>
+</html>

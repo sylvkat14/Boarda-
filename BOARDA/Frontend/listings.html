@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Boarda helps students find and compare boarding houses near their campus — search by location, price, and amenities.">
+      <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="style.css"/>
+      <script src="listings-gallery.js" defer></script>
+      <script src="listings-search.js" defer></script>
+      <title>Boarda</title>
+          <script src="auth-interactions.js" defer></script>
+    </head>
+    <body>
+      <header>
+        <a href="index.html"><img src="../Images/logo.png" alt="Website Logo" width="300"></a>
+      </header>
+      <nav aria-label="primary navigation">
+        
+        <a href="index.html">Home</a> &nbsp;&nbsp;
+        <a href="aboutUs.html">About Us</a> &nbsp;&nbsp;
+        <a href="listings.html">Listings</a> &nbsp;&nbsp;
+        <a href="register.html">Register</a> &nbsp;&nbsp;
+        <a href="login.html">Login</a> &nbsp;&nbsp;
+        <a href="howItWorks.html">How It Works</a> &nbsp;&nbsp;
+      </nav>
+      <main class="listings-page">
+        <h2>Browse Boarding Houses</h2>
+        <aside aria-label="Filter Listings">
+            <form>
+                <label for="room-type">Room Type</label>
+                <select id="room-type" name="room_type">
+                    <option value="">Any</option>
+                    <option value="single">Single</option>
+                    <option value="shared">Shared</option>
+                    <option value="self-contained">Self Contained</option>
+                </select>
+            </form>
+        </aside>
+        <fieldset>
+            <legend>Amenities</legend>
+
+            <input type="checkbox" id="wifi" name="amenities" value="wifi">
+            <label for="wifi">Wi-Fi</label>
+
+            <input type="checkbox" id="water" name="amenities" value="water">
+            <label for="water">Water</label>
+
+            <input type="checkbox" id="furnished" name="amenities" value="furnished">
+            <label for="furnished">Furnished</label>
+        </fieldset>
+        <br>
+        <button type="submit">Apply Filters</button>
+        <p id="listing-results-count" role="status" aria-live="polite">Showing all listed homes.</p>
+        <br>
+
+        <figure data-location="Kalewa Barrack Kalewa Road" data-price="1200">
+            <div class="listing-photo"><img src="../Images/gdflubansaBH.jpg" alt="Lubansa Boarding House exterior"></div>
+            <figcaption>Lubansa Boarding House</figcaption>
+        </figure>
+        <div class="thumbnails" role="group" aria-label="More photos">
+            <button type="button"> <img src="../Images/gdfR1.jpg" alt="Bedroom 1"></button>
+            <button type="button"> <img src="../Images/gdfR2.jpg" alt="Bedroom 2"></button>
+            <button type="button"> <img src="../Images/gdfR3.jpg" alt="Bathroom"></button>
+        </div>
+
+        <section aria-labelledby="amenities-heading">
+            <h2 id="amenities-heading">Amenities</h2>
+            <ul>
+                <li>Wi-Fi included</li>
+                <li>Water included</li>
+                <li>Furnished</li>
+                <li>24/7 security</li>
+            </ul>
+        </section aria-labelledby="contact-heading">
+            <h2 id="contact-heading">Contact Landlord</h2>
+            <dl>
+                <dt>Name:</dt>
+                <dd>Mrs. Mwansa L.</dd>
+                <dt>Phone:</dt>
+                <dd><a href="tel:+260973456789">+260973456789</a> </dd>
+                <dt>Email:</dt>
+                <dd><a href="mailto:mwansaL@gmail.com">mwansaL@gmail.com</a> </dd>
+            </dl>
+
+        <figure data-location="Breweries Road" data-price="1500">
+            <div class="listing-photo"><img src="../Images/sunsetBH.jpg" alt="Sunset Boarding House exterior"></div>
+            <figcaption>Sunset Boarding House</figcaption>
+        </figure>
+        <div class="thumbnails" role="group" aria-label="More photos">
+            <button type="button"> <img src="../Images/sunsetR1.jpg" alt="Bedroom 1"></button>
+            <button type="button"> <img src="../Images/sunsetR2.jpg" alt="Bedroom 2"></button>
+            <button type="button"> <img src="../Images/sunsetR3.jpg" alt="Bathroom"></button>
+        </div>
+
+        <section aria-labelledby="amenities-heading">
+            <h2 id="amenities-heading">Amenities</h2>
+            <ul>
+                <li>Wi-Fi included</li>
+                <li>Water included</li>
+                <li>24/7 security</li>
+            </ul>
+        </section aria-labelledby="contact-heading">
+            <h2 id="contact-heading">Contact Landlord</h2>
+            <dl>
+                <dt>Name:</dt>
+                <dd>Mr Chibale A.</dd>
+                <dt>Phone:</dt>
+                <dd><a href="tel:+260765438900">+260765438900</a> </dd>
+                <dt>Email:</dt>
+                <dd><a href="mailto:chibaleA@gmail.com">chibaleA@example.com</a> </dd>
+            </dl>
+
+        <figure>
+            <div class="listing-photo"><img src="../Images/mandonnaBH.jpg" alt="Mandonna Boarding House exterior"></div>
+            <figcaption>Mandonna Boarding House</figcaption>
+        </figure>
+        <div class="thumbnails" role="group" aria-label="More photos">
+            <button type="button"> <img src="../Images/mandonnaR1.jpg" alt="Bedroom 1"></button>
+            <button type="button"> <img src="../Images/mandonnaR2.jpg" alt="Bedroom 2"></button>
+            <button type="button"> <img src="../Images/mandonnaR3.jpg" alt="Bedroom 3"></button>
+        </div>
+
+        <section aria-labelledby="amenities-heading">
+            <h2 id="amenities-heading">Amenities</h2>
+            <ul>
+                <li>Water included</li>
+                <li>24/7 security</li>
+            </ul>
+        </section aria-labelledby="contact-heading">
+            <h2 id="contact-heading">Contact Landlord</h2>
+            <dl>
+                <dt>Name:</dt>
+                <dd>Mr Sikanyika P.</dd>
+                <dt>Phone:</dt>
+                <dd><a href="tel:+260954894320">+260954894320</a> </dd>
+                <dt>Email:</dt>
+                <dd><a href="mailto:SikanyikaP@gmail.com">SikanyikaP@gmail.com</a> </dd>
+            </dl>
+
+            <figure>
+            <div class="listing-photo"><img src="../Images/chaniBH.jpg" alt="Chani Boarding House exterior"></div>
+            <figcaption>Chani Boarding House</figcaption>
+        </figure>
+        <div class="thumbnails" role="group" aria-label="More photos">
+            <button type="button"> <img src="../Images/chaniR1.jpg" alt="Bedroom 1"></button>
+            <button type="button"> <img src="../Images/chaniR2.jpg" alt="Bedroom 2"></button>
+            <button type="button"> <img src="../Images/chaniR3.jpg" alt="Bedroom 3"></button>
+        </div>
+
+        <section aria-labelledby="amenities-heading">
+            <h2 id="amenities-heading">Amenities</h2>
+            <ul>
+                <li>Wi-Fi included</li>
+                <li>Water included</li>
+                <li>Furnished</li>
+                <li>24/7 security</li>
+            </ul>
+        </section aria-labelledby="contact-heading">
+            <h2 id="contact-heading">Contact Landlord</h2>
+            <dl>
+                <dt>Name:</dt>
+                <dd>Mrs. Kaira S.</dd>
+                <dt>Phone:</dt>
+                <dd><a href="tel:+260764209732">+260764209732</a> </dd>
+                <dt>Email:</dt>
+                <dd><a href="mailto:kairaS@gmail.com">kairaS@gmail.com</a> </dd>
+            </dl>
+
+        <figure data-location="Mwatayamvo Road Northrise" data-price="900">
+            <div class="listing-photo"><img src="../Images/katandaBH.jpeg" alt="Katanda Boarding House exterior"></div>
+            <figcaption>Katanda Boarding House</figcaption>
+        </figure>
+        <div class="thumbnails" role="group" aria-label="More photos">
+            <button type="button"> <img src="../Images/katandaR1.jpg" alt="Bedroom 1"></button>
+            <button type="button"> <img src="../Images/katandaR2.jpg" alt="Bedroom 2"></button>
+        </div>
+
+        <section aria-labelledby="amenities-heading">
+            <h2 id="amenities-heading">Amenities</h2>
+            <ul>
+                <li>Wi-Fi included</li>
+                <li>Water included</li>
+                <li>Furnished</li>
+                <li>24/7 security</li>
+            </ul>
+        </section aria-labelledby="contact-heading">
+            <h2 id="contact-heading">Contact Landlord</h2>
+            <dl>
+                <dt>Name:</dt>
+                <dd>Mr Ng'andu M.</dd>
+                <dt>Phone:</dt>
+                <dd><a href="tel:+260776934509">+260776934509</a> </dd>
+                <dt>Email:</dt>
+                <dd><a href="mailto:Ng'anduM@example.com">Ng'anduM@gmail.com</a> </dd>
+            </dl>
+
+        <figure>
+            <div class="listing-photo"><img src="../Images/balendoBH.jpg" alt="Balendo Boarding House exterior"></div>
+            <figcaption>Katanda Boarding House</figcaption>
+        </figure>
+        <div class="thumbnails" role="group" aria-label="More photos">
+            <button type="button"> <img src="../Images/balendoR1.jpg" alt="Bedroom 1"></button>
+            <button type="button"> <img src="../Images/balendoR2.jpg" alt="Bedroom 2"></button>
+        </div>
+
+        <section aria-labelledby="amenities-heading">
+            <h2 id="amenities-heading">Amenities</h2>
+            <ul>
+                <li>Wi-Fi included</li>
+                <li>Water included</li>
+                <li>24/7 security</li>
+            </ul>
+        </section aria-labelledby="contact-heading">
+            <h2 id="contact-heading">Contact Landlord</h2>
+            <dl>
+                <dt>Name:</dt>
+                <dd>Mrs. Lishanji M.</dd>
+                <dt>Phone:</dt>
+                <dd><a href="tel:+260765890432">+260765890432</a> </dd>
+                <dt>Email:</dt>
+                <dd><a href="mailto:lishanjiM@gamil.com">lishanjiM@gamil.com</a> </dd>
+            </dl>
+
+
+      </main>
+    </body>
+    <footer>
+        <nav aria-label="footer navigation">
+          <a href="index.html">Home</a> &nbsp;&nbsp;
+          <a href="aboutUs.html">About Us</a> &nbsp;&nbsp;
+          <a href="listings.html">Listings</a> &nbsp;&nbsp;
+          <a href="register.html">Register</a> &nbsp;&nbsp;
+          <a href="login.html">Login</a> &nbsp;&nbsp;
+          <a href="howItWorks.html">How It Works</a> &nbsp;&nbsp;
+        </nav>
+        <br>
+        &copy; Boarda team 2026. All Rights Reserved.
+    </footer>
+</html>

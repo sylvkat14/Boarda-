@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Boarda helps students find and compare boarding houses near their campus — search by location, price, and amenities.">
+      <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="style.css"/>
+      <script src="auth-interactions.js" defer></script>
+      <title>Boarda</title>
+    </head>
+    <body>
+      <header>
+        <a href="index.html"><img src="../Images/logo.png" alt="Website Logo" width="300"></a>
+      </header>
+      <nav aria-label="primary navigation">
+        
+        <a href="index.html">Home</a> &nbsp;&nbsp;
+        <a href="aboutUs.html">About Us</a> &nbsp;&nbsp;
+        <a href="listings.html">Listings</a> &nbsp;&nbsp;
+        <a href="register.html">Register</a> &nbsp;&nbsp;
+        <a href="login.html">Login</a> &nbsp;&nbsp;
+        <a href="howItWorks.html">How It Works</a> &nbsp;&nbsp;
+      </nav>
+      <main>
+        <section class="auth-card">
+          <h1>Create your account</h1>
+          <p class="subtitle">Join Boarda as a student or landlord</p>
+
+          <form action="#" method="post" data-auth-form="register">
+            <fieldset>
+            <legend>I am a...</legend>
+            <input type="radio" id="role-student" name="role" value="student" checked>
+            <label for="role-student">Student</label>
+            <input type="radio" id="role-landlord" name="role" value="landlord">
+            <label for="role-landlord">Landlord</label>
+          </fieldset>
+          <label for="full-name">Full Name</label>
+          <input type="text" id="full-name" name="full_name" autocomplete="name" required>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" autocomplete="email" required>
+
+          <label for="password">Password</label>
+          <div class="password-field">
+            <input type="password" id="password" name="password" autocomplete="new-password" required minlength="8">
+            <button class="password-toggle" type="button" data-password-toggle="password" aria-controls="password" aria-pressed="false">Show</button>
+          </div>
+          <label for="confirm-password">Confirm password</label>
+          <div class="password-field">
+            <input type="password" id="confirm-password" name="confirm_password" autocomplete="new-password" required minlength="8">
+            <button class="password-toggle" type="button" data-password-toggle="confirm-password" aria-controls="confirm-password" aria-pressed="false">Show</button>
+          </div>
+
+          <div class="terms-row">
+            <input type="checkbox" id="terms" name="terms" required>
+            <label for="terms">I agree to the Terms and Conditions</label>
+          </div>
+          <button type="submit">Create Account</button>
+          <p class="auth-status" role="status" hidden></p>
+          <p><a href="login.html">Already have an account? Log in</a></p>
+        </form>
+        </section>
+      </main>
+    </body>
+    <footer>
+        <nav aria-label="footer navigation">
+          <a href="index.html">Home</a> &nbsp;&nbsp;
+          <a href="aboutUs.html">About Us</a> &nbsp;&nbsp;
+          <a href="listings.html">Listings</a> &nbsp;&nbsp;
+          <a href="register.html">Register</a> &nbsp;&nbsp;
+          <a href="login.html">Login</a> &nbsp;&nbsp;
+          <a href="howItWorks.html">How It Works</a> &nbsp;&nbsp;
+        </nav>
+        <br>
+        &copy; Boarda team 2026. All Rights Reserved.
+    </footer>
+</html>
