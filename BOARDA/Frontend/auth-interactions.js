@@ -1,9 +1,11 @@
 const AUTH_API = '/api/auth';
 const PRIMARY_NAV = document.querySelector('body > nav[aria-label="primary navigation"]');
 
-const DASHBOARD_PATH = (ROLE) => ROLE === 'landlord'
-  ? '/Frontend/landlord-dashboard.html'
-  : '/Frontend/student-dashboard.html';
+const DASHBOARD_PATH = (ROLE) => ROLE === 'admin'
+  ? '/Frontend/admin-dashboard.html'
+  : ROLE === 'landlord'
+    ? '/Frontend/landlord-dashboard.html'
+    : '/Frontend/student-dashboard.html';
 
 const GET_HEADER_ACTIONS = () => {
   const HEADER = document.querySelector('body > header');
@@ -55,7 +57,7 @@ const ADD_MOBILE_MENU = () => {
 };
 
 const ADD_NOTIFICATION_CENTER = () => {
-  if (!PRIMARY_NAV || PRIMARY_NAV.querySelector('.nav-notifications')) return;
+  if (!PRIMARY_NAV || document.querySelector('.nav-notifications')) return;
 
   const ELEMENT = (TAG, CLASS_NAME, TEXT) => {
     const NODE = document.createElement(TAG);
@@ -201,13 +203,25 @@ const ADD_NOTIFICATION_CENTER = () => {
     }
   });
 
-  PRIMARY_NAV.classList.add('has-notifications');
-  const HOW_IT_WORKS_LINK = [...PRIMARY_NAV.querySelectorAll('a')].find((LINK) => {
-    const PATH = new URL(LINK.getAttribute('href'), window.location.href).pathname.toLowerCase();
-    return PATH.endsWith('/howitworks.html');
-  });
-  if (HOW_IT_WORKS_LINK) HOW_IT_WORKS_LINK.insertAdjacentElement('afterend', WIDGET);
-  else PRIMARY_NAV.append(WIDGET);
+  const MOBILE_QUERY = window.matchMedia('(max-width: 767px)');
+  const PLACE_WIDGET = () => {
+    const HEADER_ACTIONS = GET_HEADER_ACTIONS();
+    if (MOBILE_QUERY.matches && HEADER_ACTIONS) {
+      const MENU_BUTTON = HEADER_ACTIONS.querySelector('.nav-menu-toggle');
+      HEADER_ACTIONS.insertBefore(WIDGET, MENU_BUTTON);
+      return;
+    }
+
+    const HOW_IT_WORKS_LINK = [...PRIMARY_NAV.querySelectorAll('a')].find((LINK) => {
+      const PATH = new URL(LINK.getAttribute('href'), window.location.href).pathname.toLowerCase();
+      return PATH.endsWith('/howitworks.html');
+    });
+    if (HOW_IT_WORKS_LINK) HOW_IT_WORKS_LINK.insertAdjacentElement('afterend', WIDGET);
+    else PRIMARY_NAV.append(WIDGET);
+  };
+  PLACE_WIDGET();
+  if (MOBILE_QUERY.addEventListener) MOBILE_QUERY.addEventListener('change', PLACE_WIDGET);
+  else MOBILE_QUERY.addListener(PLACE_WIDGET);
   LOAD();
   window.setInterval(() => {
     if (!document.hidden) LOAD();

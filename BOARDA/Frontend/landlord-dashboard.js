@@ -12,6 +12,8 @@ const LISTING_FORM_STATUS = document.querySelector('#listing-form-status');
 const PUBLISHED_LISTINGS_COUNT = document.querySelector('#landlord-published-count');
 const DRAFT_LISTINGS_COUNT = document.querySelector('#landlord-draft-count');
 const NEW_INQUIRIES_COUNT = document.querySelector('#landlord-new-inquiries-count');
+const LANDLORD_TABLIST = document.querySelector('.landlord-dashboard-nav');
+const LANDLORD_TABS = [...LANDLORD_TABLIST.querySelectorAll('[role="tab"]')];
 let CURRENT_LANDLORD = null;
 let LISTING_PHOTOS = [];
 
@@ -21,6 +23,52 @@ function landlordElement(TAG, CLASS_NAME, TEXT) {
   if (TEXT !== undefined) ELEMENT.textContent = TEXT;
   return ELEMENT;
 }
+
+function activateLandlordTab(TAB_ID, FOCUS_TAB = false) {
+  const ACTIVE_TAB = LANDLORD_TABS.find((TAB) => TAB.id === TAB_ID);
+  if (!ACTIVE_TAB) return;
+
+  LANDLORD_TABS.forEach((TAB) => {
+    const IS_ACTIVE = TAB === ACTIVE_TAB;
+    TAB.setAttribute('aria-selected', String(IS_ACTIVE));
+    TAB.tabIndex = IS_ACTIVE ? 0 : -1;
+    document.getElementById(TAB.getAttribute('aria-controls')).hidden = !IS_ACTIVE;
+  });
+  LANDLORD_TABLIST.setAttribute('aria-orientation', 'horizontal');
+  if (FOCUS_TAB) ACTIVE_TAB.focus();
+}
+
+function moveLandlordTabFocus(CURRENT_TAB, KEY) {
+  const FORWARD_KEY = 'ArrowRight';
+  const BACKWARD_KEY = 'ArrowLeft';
+  let NEXT_INDEX = LANDLORD_TABS.indexOf(CURRENT_TAB);
+
+  if (KEY === FORWARD_KEY) NEXT_INDEX = (NEXT_INDEX + 1) % LANDLORD_TABS.length;
+  else if (KEY === BACKWARD_KEY) NEXT_INDEX = (NEXT_INDEX - 1 + LANDLORD_TABS.length) % LANDLORD_TABS.length;
+  else if (KEY === 'Home') NEXT_INDEX = 0;
+  else if (KEY === 'End') NEXT_INDEX = LANDLORD_TABS.length - 1;
+  else return;
+
+  CURRENT_TAB = LANDLORD_TABS[NEXT_INDEX];
+  activateLandlordTab(CURRENT_TAB.id, true);
+}
+
+LANDLORD_TABS.forEach((TAB) => {
+  TAB.addEventListener('click', () => activateLandlordTab(TAB.id));
+  TAB.addEventListener('keydown', (EVENT) => {
+    if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(EVENT.key)) {
+      EVENT.preventDefault();
+      moveLandlordTabFocus(TAB, EVENT.key);
+    }
+  });
+});
+LANDLORD_TABLIST.setAttribute('aria-orientation', 'horizontal');
+document.querySelectorAll('[data-landlord-tab]').forEach((LINK) => {
+  LINK.addEventListener('click', (EVENT) => {
+    EVENT.preventDefault();
+    activateLandlordTab(LINK.dataset.landlordTab, true);
+  });
+});
 
 async function landlordRequest(URL, OPTIONS = {}) {
   const RESPONSE = await fetch(URL, {
@@ -83,6 +131,7 @@ function clearListingForm() {
 }
 
 function editListing(LISTING) {
+  activateLandlordTab('landlord-create-tab');
   LISTING_FORM.dataset.editId = LISTING.id;
   LISTING_FORM.elements.namedItem('title').value = LISTING.title || '';
   LISTING_FORM.elements.namedItem('location').value = LISTING.location || '';
@@ -106,6 +155,7 @@ function editListing(LISTING) {
   SAVE_LISTING_BUTTON.textContent = 'Save changes';
   CANCEL_LISTING_EDIT.hidden = false;
   LISTING_FORM.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  LISTING_FORM.elements.namedItem('title').focus({ preventScroll: true });
 }
 
 function renderLandlordListing(LISTING) {
@@ -214,10 +264,69 @@ function renderLandlordInquiry(INQUIRY) {
   ITEM.append(TIME);
 
   const ACTIONS = landlordElement('div', 'dashboard-card-actions landlord-inquiry-actions');
+  const REPLY_FORM = document.createElement('form');
+  REPLY_FORM.className = 'dashboard-form landlord-email-reply-form';
+  REPLY_FORM.hidden = true;
+  REPLY_FORM.id = `landlord-inquiry-reply-${INQUIRY.id}`;
+
   if (INQUIRY.studentEmail) {
-    const EMAIL_BUTTON = landlordElement('a', 'button-secondary', 'Email student');
-    EMAIL_BUTTON.href = EMAIL.href;
+    const EMAIL_BUTTON = landlordElement('button', 'button-secondary', 'Email student');
+    EMAIL_BUTTON.type = 'button';
+    EMAIL_BUTTON.setAttribute('aria-expanded', 'false');
+    EMAIL_BUTTON.setAttribute('aria-controls', REPLY_FORM.id);
+    EMAIL_BUTTON.addEventListener('click', () => {
+      REPLY_FORM.hidden = !REPLY_FORM.hidden;
+      EMAIL_BUTTON.setAttribute('aria-expanded', String(!REPLY_FORM.hidden));
+      if (!REPLY_FORM.hidden) REPLY_FORM.querySelector('textarea').focus();
+    });
     ACTIONS.append(EMAIL_BUTTON);
+
+    const REPLY_LABEL = landlordElement('label', '', `Message to ${INQUIRY.studentName || 'student'}`);
+    const REPLY_MESSAGE = document.createElement('textarea');
+    REPLY_MESSAGE.name = 'message';
+    REPLY_MESSAGE.rows = 4;
+    REPLY_MESSAGE.maxLength = 4000;
+    REPLY_MESSAGE.required = true;
+    REPLY_MESSAGE.placeholder = 'Write a reply to this inquiry.';
+    REPLY_LABEL.append(REPLY_MESSAGE);
+
+    const REPLY_STATUS = landlordElement('p', 'listing-form-status');
+    REPLY_STATUS.setAttribute('role', 'status');
+    REPLY_STATUS.setAttribute('aria-live', 'polite');
+    const SEND_BUTTON = landlordElement('button', 'button-primary', 'Send email');
+    SEND_BUTTON.type = 'submit';
+    const CANCEL_BUTTON = landlordElement('button', 'button-quiet', 'Cancel');
+    CANCEL_BUTTON.type = 'button';
+    CANCEL_BUTTON.addEventListener('click', () => {
+      REPLY_FORM.hidden = true;
+      EMAIL_BUTTON.setAttribute('aria-expanded', 'false');
+      REPLY_STATUS.textContent = '';
+    });
+
+    REPLY_FORM.append(REPLY_LABEL);
+    const REPLY_ACTIONS = landlordElement('div', 'dashboard-form-actions');
+    REPLY_ACTIONS.append(SEND_BUTTON, CANCEL_BUTTON);
+    REPLY_FORM.append(REPLY_ACTIONS, REPLY_STATUS);
+    REPLY_FORM.addEventListener('submit', async (EVENT) => {
+      EVENT.preventDefault();
+      SEND_BUTTON.disabled = true;
+      CANCEL_BUTTON.disabled = true;
+      REPLY_STATUS.textContent = 'Sending email…';
+      try {
+        await landlordRequest(`/api/landlord/inquiries/${encodeURIComponent(INQUIRY.id)}/reply`, {
+          method: 'POST',
+          body: JSON.stringify({ message: REPLY_MESSAGE.value }),
+        });
+        REPLY_MESSAGE.value = '';
+        REPLY_STATUS.textContent = `Email sent to ${INQUIRY.studentEmail}.`;
+      } catch (ERROR) {
+        REPLY_STATUS.textContent = ERROR.message;
+      } finally {
+        SEND_BUTTON.disabled = false;
+        CANCEL_BUTTON.disabled = false;
+      }
+    });
+    ITEM.append(REPLY_FORM);
   }
 
   const ADD_STATUS_ACTION = (STATUS, LABEL, CLASS_NAME) => {
@@ -362,6 +471,7 @@ LISTING_FORM.addEventListener('submit', async (EVENT) => {
     clearListingForm();
     setLandlordStatus(EDIT_ID ? 'Listing updated.' : 'Listing created.');
     await Promise.all([loadLandlordListings(), loadLandlordInquiries()]);
+    activateLandlordTab('landlord-listings-tab');
   } catch (ERROR) {
     setLandlordStatus(ERROR instanceof TypeError
       ? 'Cannot reach the Boarda backend. Start it with “npm run dev” from BOARDA/backend, then refresh this page.'
@@ -378,7 +488,11 @@ async function startLandlordDashboard() {
   try {
     const SESSION = await landlordRequest('/api/auth/me');
     if (SESSION.user?.role !== 'landlord') {
-      window.location.replace(SESSION.user?.role === 'student' ? 'student-dashboard.html' : 'login.html');
+      window.location.replace(
+        SESSION.user?.role === 'admin' ? 'admin-dashboard.html'
+          : SESSION.user?.role === 'student' ? 'student-dashboard.html'
+            : 'login.html',
+      );
       return;
     }
     CURRENT_LANDLORD = SESSION.user;

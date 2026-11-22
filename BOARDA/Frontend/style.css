@@ -813,6 +813,7 @@ main > form p { margin-top: 14px; }
   color: var(--green);
   font-size: 14px;
 }
+.auth-status.is-error { background: #FCEBE7; color: #8C2E1B; }
 .auth-status[hidden] { display: none; }
 
 /* Listings page: <div class="listings-layout"> <aside> filters </aside> <div class="results"> … </div> </div> */
@@ -1358,6 +1359,7 @@ footer br { display: none; }
 
 /* Account dashboards */
 .dashboard-page { max-width: 960px; margin-inline: auto; padding-top: 20px; }
+.landlord-dashboard-page { max-width: 1200px; }
 .dashboard-heading {
   padding: 24px;
   border: 1px solid var(--border);
@@ -1453,6 +1455,163 @@ footer br { display: none; }
   text-transform: uppercase;
 }
 .dashboard-status { min-height: 22px; margin: 12px 0 0; color: var(--green); font-size: 14px; }
+.admin-dashboard-page { max-width: 1240px; }
+.admin-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+.admin-sidebar {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--white);
+}
+.admin-nav-button {
+  flex: 1 1 25%;
+  width: auto;
+  min-width: 0;
+  min-height: 42px;
+  margin: 0;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.admin-nav-button:hover,
+.admin-nav-button:focus-visible {
+  background: var(--green-tint);
+  outline: 2px solid var(--green);
+  outline-offset: 1px;
+}
+.admin-nav-button.is-active {
+  background: var(--green);
+  color: var(--white);
+}
+.admin-content { min-width: 0; }
+.admin-section { min-width: 0; }
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 14px;
+}
+.admin-stat-card {
+  display: grid;
+  gap: 8px;
+  min-height: 150px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--white);
+}
+.admin-stat-card strong {
+  color: var(--green);
+  font-size: 38px;
+  line-height: 1;
+}
+.admin-stat-card small { color: var(--text-muted); }
+.admin-toolbar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--white);
+}
+.admin-toolbar label { display: grid; gap: 6px; color: var(--text-soft); font-size: 12px; font-weight: 800; }
+.admin-toolbar input,
+.admin-toolbar select,
+.admin-inline-select {
+  width: 100%;
+  min-height: 42px;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border-mid);
+  border-radius: 9px;
+  background: var(--white);
+  color: var(--text);
+  font-size: 13px;
+}
+.admin-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--white);
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.admin-table th,
+.admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+.admin-table th {
+  background: #F6F8F5;
+  color: var(--text-soft);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.admin-table tr:last-child td { border-bottom: 0; }
+.admin-table td strong,
+.admin-table td small { display: block; }
+.admin-table td small { margin-top: 4px; color: var(--text-muted); }
+.admin-inline-select { min-width: 120px; }
+.admin-action-button {
+  width: auto;
+  min-height: 36px;
+  margin: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--border-mid);
+  border-radius: 9px;
+  background: var(--white);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 800;
+}
+.admin-action-button:hover { border-color: var(--green); background: var(--green-tint); }
+.admin-empty-state {
+  margin: 0;
+  padding: 20px;
+  border: 1px dashed var(--border-mid);
+  border-radius: 14px;
+  color: var(--text-muted);
+  background: var(--white);
+}
+.admin-inquiry-list { display: grid; gap: 12px; }
+.admin-inquiry-card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--white);
+}
+.admin-inquiry-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.admin-inquiry-heading h3,
+.admin-inquiry-heading p { margin: 0; }
+.admin-inquiry-heading p { margin-top: 5px; color: var(--text-muted); font-size: 12px; }
+.admin-inquiry-message { margin: 12px 0 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.admin-inquiry-meta { margin: 0; color: var(--text-muted); font-size: 12px; }
 .dashboard-section { margin-top: 30px; }
 .dashboard-section-heading {
   display: flex;
@@ -1522,31 +1681,68 @@ footer br { display: none; }
 .landlord-inquiry-contact { margin: 8px 0 0; color: var(--text-soft); font-size: 13px; overflow-wrap: anywhere; }
 .landlord-inquiry-contact a { color: var(--green); font-weight: 700; }
 .landlord-inquiry-actions a { display: inline-flex; align-items: center; min-height: 42px; text-decoration: none; }
+.landlord-email-reply-form { display: grid; gap: 8px; margin-top: 12px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: #FBFCFA; }
+.landlord-email-reply-form[hidden] { display: none; }
+.landlord-email-reply-form label { margin: 0; }
+.landlord-email-reply-form textarea { box-sizing: border-box; min-height: 104px; padding: 12px; border: 1.5px solid var(--border-mid); border-radius: 12px; background: var(--white); color: var(--text); font-size: 14px; line-height: 1.5; }
+.landlord-email-reply-form textarea:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgb(31 92 63 / 10%); }
+.landlord-email-reply-form .listing-form-status { margin: 0; }
+.landlord-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
 .landlord-dashboard-nav {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
-  margin-top: 14px;
+  overflow-x: auto;
   padding: 8px;
   border: 1px solid var(--border);
   border-radius: 14px;
   background: var(--white);
 }
-.landlord-dashboard-nav a {
-  flex: 1 1 140px;
+.landlord-dashboard-nav [role="tab"] {
+  flex: 1 1 25%;
+  width: auto;
+  min-width: 0;
   min-height: 38px;
+  margin: 0;
   padding: 9px 12px;
+  border: 0;
   border-radius: 9px;
+  background: transparent;
   color: var(--green);
   font-size: 13px;
   font-weight: 800;
   text-align: center;
-  text-decoration: none;
+  white-space: normal;
+  cursor: pointer;
 }
-.landlord-dashboard-nav a:hover,
-.landlord-dashboard-nav a:focus-visible {
+.landlord-dashboard-nav [role="tab"]:hover,
+.landlord-dashboard-nav [role="tab"]:focus-visible {
   background: var(--green-tint);
-  outline: none;
+  outline: 2px solid var(--green);
+  outline-offset: 1px;
+}
+.landlord-dashboard-nav [role="tab"][aria-selected="true"] {
+  background: var(--green);
+  color: var(--white);
+}
+.landlord-dashboard-nav [role="tab"][aria-selected="true"]:hover,
+.landlord-dashboard-nav [role="tab"][aria-selected="true"]:focus-visible {
+  background: var(--green);
+  color: var(--white);
+}
+.landlord-dashboard-panel {
+  min-width: 0;
+}
+.landlord-dashboard-panel[hidden] {
+  display: none;
+}
+.landlord-dashboard-panel > .dashboard-section:first-child {
+  margin-top: 0;
 }
 .landlord-overview-grid {
   display: grid;
@@ -1703,6 +1899,30 @@ footer br { display: none; }
   body > nav[aria-label="primary navigation"] { overflow: visible; }
   .dashboard-heading { padding: 34px; }
   .dashboard-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 18px;
+  }
+  .admin-sidebar {
+    position: static;
+    flex-direction: row;
+    overflow: visible;
+  }
+  .admin-nav-button { flex: 1 1 25%; width: auto; text-align: center; }
+  .landlord-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 18px;
+  }
+  .landlord-dashboard-nav {
+    flex-direction: row;
+  }
+  .landlord-dashboard-nav [role="tab"] {
+    flex: 1 1 0;
+    width: auto;
+    text-align: center;
+  }
   .landlord-overview-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .landlord-form-section { padding: 24px; }
   .listing-inquiry-form button { width: auto; justify-self: start; min-width: 160px; }
@@ -1710,6 +1930,23 @@ footer br { display: none; }
 
 @media (max-width: 600px) {
   .notification-panel { right: 0; left: auto; width: min(380px, calc(100vw - 40px)); }
+  .admin-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    overflow: visible;
+  }
+  .admin-nav-button {
+    width: 100%;
+    min-height: 44px;
+    padding-inline: 8px;
+    white-space: nowrap;
+  }
+  .admin-toolbar { grid-template-columns: minmax(0, 1fr); }
+  .admin-stat-grid { gap: 10px; }
+  .admin-stat-card { min-height: 0; padding: 16px; }
+  .admin-inquiry-card { padding: 14px; }
+  .admin-inquiry-heading { flex-direction: column; gap: 8px; }
 }
 
 @media (max-width: 767px) {
@@ -1722,10 +1959,6 @@ footer br { display: none; }
     padding-bottom: 8px;
   }
   body > header .nav-menu-toggle { display: flex; }
-  body > nav[aria-label="primary navigation"].has-notifications:not(.is-open) .nav-notifications {
-    display: flex;
-    margin-left: auto;
-  }
   body > nav[aria-label="primary navigation"]:not(.is-open) > a,
   body > nav[aria-label="primary navigation"]:not(.is-open) .account-menu,
   body > nav[aria-label="primary navigation"]:not(.is-open) .dashboard-nav-link { display: none; }

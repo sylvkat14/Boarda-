@@ -287,7 +287,7 @@ async function replaceListingRelations(CLIENT, LISTING_ID, INPUT) {
   }
 }
 
-function createListingRouter({ pool: PG_POOL, requireAuthenticated, requireRole, sameOrigin }) {
+function createListingRouter({ pool: PG_POOL, requireAuthenticated, requireRole, sameOrigin, sendEmail }) {
   const ROUTER = express.Router();
 
   ROUTER.get('/listings', async (REQUEST, RESPONSE, NEXT) => {
@@ -514,6 +514,49 @@ function createListingRouter({ pool: PG_POOL, requireAuthenticated, requireRole,
         [REQUEST.user.id],
       );
       RESPONSE.json({ inquiries: RESULT.rows, total: RESULT.rowCount });
+    } catch (ERROR) {
+      NEXT(ERROR);
+    }
+  });
+
+  ROUTER.post('/landlord/inquiries/:inquiryId/reply', sameOrigin, requireAuthenticated, requireRole('landlord'), async (REQUEST, RESPONSE, NEXT) => {
+    const INQUIRY_ID = REQUEST.params.inquiryId;
+    const MESSAGE = typeof REQUEST.body?.message === 'string' ? REQUEST.body.message.trim() : '';
+    if (!/^\d+$/.test(INQUIRY_ID)) return RESPONSE.status(400).json({ error: 'Choose a valid inquiry.' });
+    if (!MESSAGE || MESSAGE.length > 4000) {
+      return RESPONSE.status(400).json({ error: 'Enter a message up to 4000 characters.' });
+    }
+    if (!sendEmail) {
+      return RESPONSE.status(503).json({ error: 'Email is not configured. Configure SMTP to send replies.' });
+    }
+
+    try {
+      const RESULT = await PG_POOL.query(
+        `SELECT listing.title AS "listingTitle",
+                student.name AS "studentName",
+                student.email AS "studentEmail"
+         FROM listing_inquiries AS inquiry
+         JOIN listings AS listing ON listing.id = inquiry.listing_id
+         JOIN users AS student ON student.id = inquiry.student_user_id
+         WHERE inquiry.id = $1 AND listing.owner_user_id = $2`,
+        [INQUIRY_ID, REQUEST.user.id],
+      );
+      const INQUIRY = RESULT.rows[0];
+      if (!INQUIRY) return RESPONSE.status(404).json({ error: 'Inquiry not found.' });
+
+      try {
+        await sendEmail({
+          to: INQUIRY.studentEmail,
+          replyTo: `${REQUEST.user.name} <${REQUEST.user.email}>`,
+          subject: 'Reply to your Boarda housing inquiry',
+          text: `Hello ${INQUIRY.studentName},\n\n${MESSAGE}\n\n${REQUEST.user.name} sent this message about your inquiry for ${INQUIRY.listingTitle}.\n\nYou can reply to this email to contact the landlord.`,
+        });
+      } catch (ERROR) {
+        console.error('Landlord inquiry email delivery failed:', ERROR.code || ERROR.name);
+        return RESPONSE.status(502).json({ error: 'Could not send the email. Check SMTP configuration and try again.' });
+      }
+
+      RESPONSE.json({ sent: true });
     } catch (ERROR) {
       NEXT(ERROR);
     }

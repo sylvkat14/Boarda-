@@ -29,47 +29,51 @@
       </section>
       <p id="landlord-dashboard-status" class="dashboard-status" role="status" aria-live="polite">Loading your account…</p>
 
-      <nav class="landlord-dashboard-nav" aria-label="Landlord dashboard sections">
-        <a href="#landlord-overview">Overview</a>
-        <a href="#landlord-create-listing">Create listing</a>
-        <a href="#landlord-listings-section">Listings</a>
-        <a href="#landlord-inquiries">Conversations</a>
-      </nav>
+      <div class="landlord-workspace">
+        <nav class="landlord-dashboard-nav" role="tablist" aria-label="Landlord dashboard sections" aria-orientation="horizontal">
+          <button id="landlord-overview-tab" type="button" role="tab" aria-selected="true" aria-controls="landlord-overview-panel" tabindex="0">Overview</button>
+          <button id="landlord-create-tab" type="button" role="tab" aria-selected="false" aria-controls="landlord-create-panel" tabindex="-1">Create listing</button>
+          <button id="landlord-listings-tab" type="button" role="tab" aria-selected="false" aria-controls="landlord-listings-panel" tabindex="-1">Listings</button>
+          <button id="landlord-inquiries-tab" type="button" role="tab" aria-selected="false" aria-controls="landlord-inquiries-panel" tabindex="-1">Conversations</button>
+        </nav>
 
-      <section id="landlord-overview" class="dashboard-section landlord-overview" aria-labelledby="landlord-overview-heading">
-        <div class="dashboard-section-heading">
-          <div>
-            <p class="eyebrow">At a glance</p>
-            <h2 id="landlord-overview-heading">Overview</h2>
-          </div>
+        <div id="landlord-overview-panel" class="landlord-dashboard-panel" role="tabpanel" aria-labelledby="landlord-overview-tab" tabindex="0">
+          <section id="landlord-overview" class="dashboard-section landlord-overview" aria-labelledby="landlord-overview-heading">
+            <div class="dashboard-section-heading">
+              <div>
+                <p class="eyebrow">At a glance</p>
+                <h2 id="landlord-overview-heading">Overview</h2>
+              </div>
+            </div>
+            <div class="landlord-overview-grid">
+              <a class="landlord-overview-card" href="#landlord-listings-section" data-landlord-tab="landlord-listings-tab">
+                <span class="eyebrow">Published listings</span>
+                <strong id="landlord-published-count">—</strong>
+                <span class="landlord-overview-link">Manage listings <span aria-hidden="true">→</span></span>
+              </a>
+              <a class="landlord-overview-card" href="#landlord-listings-section" data-landlord-tab="landlord-listings-tab">
+                <span class="eyebrow">Draft listings</span>
+                <strong id="landlord-draft-count">—</strong>
+                <span class="landlord-overview-link">Review drafts <span aria-hidden="true">→</span></span>
+              </a>
+              <a class="landlord-overview-card" href="#landlord-inquiries" data-landlord-tab="landlord-inquiries-tab">
+                <span class="eyebrow">New conversations</span>
+                <strong id="landlord-new-inquiries-count">—</strong>
+                <span class="landlord-overview-link">View inquiries <span aria-hidden="true">→</span></span>
+              </a>
+            </div>
+          </section>
         </div>
-        <div class="landlord-overview-grid">
-          <a class="landlord-overview-card" href="#landlord-listings-section">
-            <span class="eyebrow">Published listings</span>
-            <strong id="landlord-published-count">—</strong>
-            <span class="landlord-overview-link">Manage listings <span aria-hidden="true">→</span></span>
-          </a>
-          <a class="landlord-overview-card" href="#landlord-listings-section">
-            <span class="eyebrow">Draft listings</span>
-            <strong id="landlord-draft-count">—</strong>
-            <span class="landlord-overview-link">Review drafts <span aria-hidden="true">→</span></span>
-          </a>
-          <a class="landlord-overview-card" href="#landlord-inquiries">
-            <span class="eyebrow">New conversations</span>
-            <strong id="landlord-new-inquiries-count">—</strong>
-            <span class="landlord-overview-link">View inquiries <span aria-hidden="true">→</span></span>
-          </a>
-        </div>
-      </section>
 
-      <section id="landlord-create-listing" class="dashboard-section landlord-form-section" aria-labelledby="listing-form-heading">
-        <div class="dashboard-section-heading">
-          <div>
-            <p class="eyebrow">Property details</p>
-            <h2 id="listing-form-heading">Create a listing</h2>
-          </div>
-        </div>
-        <form id="landlord-listing-form" class="dashboard-form">
+        <div id="landlord-create-panel" class="landlord-dashboard-panel" role="tabpanel" aria-labelledby="landlord-create-tab" tabindex="0" hidden>
+          <section id="landlord-create-listing" class="dashboard-section landlord-form-section" aria-labelledby="listing-form-heading">
+            <div class="dashboard-section-heading">
+              <div>
+                <p class="eyebrow">Property details</p>
+                <h2 id="listing-form-heading">Create a listing</h2>
+              </div>
+            </div>
+            <form id="landlord-listing-form" class="dashboard-form">
           <div class="dashboard-form-grid">
             <div>
               <label for="listing-title">Listing title</label>
@@ -134,29 +138,35 @@
             <button id="save-listing-button" type="submit">Publish listing</button>
             <button id="cancel-listing-edit" class="button-secondary" type="button" hidden>Cancel edit</button>
           </div>
-        </form>
-      </section>
-
-      <section id="landlord-listings-section" class="dashboard-section" aria-labelledby="landlord-listings-heading">
-        <div class="dashboard-section-heading">
-          <div>
-            <p class="eyebrow">Your properties</p>
-            <h2 id="landlord-listings-heading">Your listings</h2>
-          </div>
+            </form>
+          </section>
         </div>
-        <div id="landlord-listings" class="dashboard-card-grid"></div>
-      </section>
 
-      <section id="landlord-inquiries" class="dashboard-section" aria-labelledby="landlord-inquiries-heading">
-        <div class="dashboard-section-heading">
-          <div>
-            <p class="eyebrow">Conversations</p>
-            <h2 id="landlord-inquiries-heading">Student inquiries</h2>
-          </div>
+        <div id="landlord-listings-panel" class="landlord-dashboard-panel" role="tabpanel" aria-labelledby="landlord-listings-tab" tabindex="0" hidden>
+          <section id="landlord-listings-section" class="dashboard-section" aria-labelledby="landlord-listings-heading">
+            <div class="dashboard-section-heading">
+              <div>
+                <p class="eyebrow">Your properties</p>
+                <h2 id="landlord-listings-heading">Your listings</h2>
+              </div>
+            </div>
+            <div id="landlord-listings" class="dashboard-card-grid"></div>
+          </section>
         </div>
-        <p id="landlord-inquiries-status" class="dashboard-status" role="status" aria-live="polite">Loading student inquiries…</p>
-        <div id="landlord-inquiries-list" class="dashboard-list"></div>
-      </section>
+
+        <div id="landlord-inquiries-panel" class="landlord-dashboard-panel" role="tabpanel" aria-labelledby="landlord-inquiries-tab" tabindex="0" hidden>
+          <section id="landlord-inquiries" class="dashboard-section" aria-labelledby="landlord-inquiries-heading">
+            <div class="dashboard-section-heading">
+              <div>
+                <p class="eyebrow">Conversations</p>
+                <h2 id="landlord-inquiries-heading">Student inquiries</h2>
+              </div>
+            </div>
+            <p id="landlord-inquiries-status" class="dashboard-status" role="status" aria-live="polite">Loading student inquiries…</p>
+            <div id="landlord-inquiries-list" class="dashboard-list"></div>
+          </section>
+        </div>
+      </div>
     </main>
     <footer>
       <nav aria-label="footer navigation">

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Boarda platform administration dashboard.">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-interactions.js" defer></script>
+    <script src="admin-dashboard.js" defer></script>
+    <title>Admin Dashboard | Boarda</title>
+  </head>
+  <body>
+    <header>
+      <a href="index.html"><img src="../Images/logo.png" alt="Boarda" width="300"></a>
+    </header>
+    <nav aria-label="primary navigation">
+      <a href="index.html">Home</a>
+      <a href="aboutUs.html">About Us</a>
+      <a href="listings.html">Listings</a>
+      <a href="register.html">Register</a>
+      <a href="login.html">Login</a>
+      <a href="howItWorks.html">How It Works</a>
+    </nav>
+    <main class="dashboard-page admin-dashboard-page">
+      <section class="dashboard-heading admin-dashboard-heading">
+        <p class="eyebrow">Administration</p>
+        <h1>Platform dashboard</h1>
+        <p class="subtitle">Monitor accounts, listings, and student activity.</p>
+      </section>
+      <p id="admin-dashboard-status" class="dashboard-status" role="status" aria-live="polite">Loading platform data…</p>
+
+      <div class="admin-workspace">
+        <aside class="admin-sidebar" aria-label="Admin sections">
+          <button type="button" class="admin-nav-button is-active" data-admin-section="overview" aria-controls="admin-overview-section">Overview</button>
+          <button type="button" class="admin-nav-button" data-admin-section="users" aria-controls="admin-users-section">Users</button>
+          <button type="button" class="admin-nav-button" data-admin-section="listings" aria-controls="admin-listings-section">Listings</button>
+          <button type="button" class="admin-nav-button" data-admin-section="inquiries" aria-controls="admin-inquiries-section">Inquiries</button>
+        </aside>
+
+        <div class="admin-content">
+          <section id="admin-overview-section" class="admin-section" aria-labelledby="admin-overview-heading">
+            <div class="dashboard-section-heading">
+              <div>
+                <p class="eyebrow">At a glance</p>
+                <h2 id="admin-overview-heading">Overview</h2>
+              </div>
+            </div>
+            <div class="admin-stat-grid">
+              <article class="admin-stat-card">
+                <span class="eyebrow">Total users</span>
+                <strong id="admin-total-users">—</strong>
+                <small><span id="admin-student-count">—</span> students · <span id="admin-landlord-count">—</span> landlords</small>
+              </article>
+              <article class="admin-stat-card">
+                <span class="eyebrow">Listings</span>
+                <strong id="admin-total-listings">—</strong>
+                <small><span id="admin-published-count">—</span> published · <span id="admin-draft-count">—</span> drafts</small>
+              </article>
+              <article class="admin-stat-card">
+                <span class="eyebrow">Inquiries</span>
+                <strong id="admin-total-inquiries">—</strong>
+                <small><span id="admin-new-inquiries-count">—</span> new conversations</small>
+              </article>
+            </div>
+          </section>
+
+          <section id="admin-users-section" class="admin-section" aria-labelledby="admin-users-heading" hidden>
+            <div class="dashboard-section-heading">
+              <div>
+                <p class="eyebrow">Account directory</p>
+                <h2 id="admin-users-heading">Users</h2>
+              </div>
+            </div>
+            <div class="admin-toolbar">
+              <label for="admin-user-search">Search users
+                <input id="admin-user-search" type="search" placeholder="Name or email">
+              </label>
+              <label for="admin-user-role-filter">Role
+                <select id="admin-user-role-filter">
+                  <option value="">All roles</option>
+                  <option value="student">Student</option>
+                  <option value="landlord">Landlord</option>
+                  <option value="admin">Administrator</option>
+                </select>
+              </label>
+            </div>
+            <p id="admin-users-status" class="dashboard-status" role="status" aria-live="polite"></p>
+            <div id="admin-users-list" class="admin-table-wrap"></div>
+          </section>
+
+          <section id="admin-listings-section" class="admin-section" aria-labelledby="admin-listings-heading" hidden>
+            <div class="dashboard-section-heading">
+              <div>
+                <p class="eyebrow">Content moderation</p>
+                <h2 id="admin-listings-heading">Listings</h2>
+              </div>
+            </div>
+            <div class="admin-toolbar">
+              <label for="admin-listing-search">Search listings
+                <input id="admin-listing-search" type="search" placeholder="Title or location">
+              </label>
+              <label for="admin-listing-status-filter">Status
+                <select id="admin-listing-status-filter">
+                  <option value="">All statuses</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </label>
+            </div>
+            <p id="admin-listings-status" class="dashboard-status" role="status" aria-live="polite"></p>
+            <div id="admin-listings-list" class="admin-table-wrap"></div>
+          </section>
+
+          <section id="admin-inquiries-section" class="admin-section" aria-labelledby="admin-inquiries-heading" hidden>
+            <div class="dashboard-section-heading">
+              <div>
+                <p class="eyebrow">Platform activity</p>
+                <h2 id="admin-inquiries-heading">Inquiries</h2>
+              </div>
+            </div>
+            <p id="admin-inquiries-status" class="dashboard-status" role="status" aria-live="polite"></p>
+            <div id="admin-inquiries-list" class="admin-inquiry-list"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <nav aria-label="footer navigation">
+        <a href="index.html">Home</a>
+        <a href="aboutUs.html">About Us</a>
+        <a href="listings.html">Listings</a>
+        <a href="howItWorks.html">How It Works</a>
+        <a href="contactUs.html">Contact Us</a>
+      </nav>
+      <span>&copy; Boarda team 2026. All Rights Reserved.</span>
+    </footer>
+  </body>
+</html>

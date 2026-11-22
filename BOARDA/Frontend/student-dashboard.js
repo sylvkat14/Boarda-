@@ -95,7 +95,11 @@ async function loadStudentDashboard() {
   try {
     const SESSION = await studentRequest('/api/auth/me');
     if (SESSION.user?.role !== 'student') {
-      window.location.replace(SESSION.user?.role === 'landlord' ? 'landlord-dashboard.html' : 'login.html');
+      window.location.replace(
+        SESSION.user?.role === 'admin' ? 'admin-dashboard.html'
+          : SESSION.user?.role === 'landlord' ? 'landlord-dashboard.html'
+            : 'login.html',
+      );
       return;
     }
     document.querySelector('#student-name').textContent = SESSION.user.name;
