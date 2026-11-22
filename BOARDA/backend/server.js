@@ -31,8 +31,12 @@ const SMTP_PASS = process.env.SMTP_PASS;
 const SMTP_FROM = process.env.SMTP_FROM?.trim();
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 const SMTP_SECURE = process.env.SMTP_SECURE === 'true';
-const SMTP_CONFIG_PRESENT = [SMTP_HOST, SMTP_USER, SMTP_PASS, SMTP_FROM].some(Boolean);
+const SMTP_SETTINGS_PROVIDED = Boolean(SMTP_HOST || SMTP_USER || SMTP_PASS);
 const SMTP_OPTIONS = SMTP_HOST && SMTP_FROM
+  && Number.isInteger(SMTP_PORT)
+  && SMTP_PORT >= 1
+  && SMTP_PORT <= 65535
+  && Boolean(SMTP_USER) === Boolean(SMTP_PASS)
   ? {
       host: SMTP_HOST,
       port: SMTP_PORT,
@@ -54,15 +58,8 @@ if (!['http:', 'https:'].includes(APP_BASE_PROTOCOL)
   || (process.env.NODE_ENV === 'production' && APP_BASE_PROTOCOL !== 'https:')) {
   throw new Error('APP_BASE_URL must use HTTP or HTTPS, and HTTPS in production.');
 }
-if (SMTP_CONFIG_PRESENT && (
-  !SMTP_HOST
-  || !SMTP_FROM
-  || !Number.isInteger(SMTP_PORT)
-  || SMTP_PORT < 1
-  || SMTP_PORT > 65535
-  || Boolean(SMTP_USER) !== Boolean(SMTP_PASS)
-)) {
-  throw new Error('Configure SMTP_HOST, SMTP_FROM, a valid SMTP_PORT, and both SMTP_USER/SMTP_PASS when authentication is required.');
+if (SMTP_SETTINGS_PROVIDED && !SMTP_OPTIONS) {
+  console.warn('SMTP settings are incomplete or invalid; password reset email delivery is disabled.');
 }
 
 const PG_POOL = new Pool({
@@ -504,7 +501,6 @@ APP.use('/api', createListingRouter({
   requireAuthenticated,
   requireRole,
   sameOrigin,
-  sendEmail: SMTP_OPTIONS ? sendEmail : null,
 }));
 
 APP.get('/', (REQUEST, RESPONSE) => RESPONSE.redirect('/Frontend/index.html'));

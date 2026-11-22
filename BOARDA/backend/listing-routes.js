@@ -287,7 +287,15 @@ async function replaceListingRelations(CLIENT, LISTING_ID, INPUT) {
   }
 }
 
-function createListingRouter({ pool: PG_POOL, requireAuthenticated, requireRole, sameOrigin, sendEmail }) {
+function canAccessInquiry(USER, INQUIRY) {
+  if (USER.role === 'admin') return true;
+  if (USER.role === 'student') return String(USER.id) === String(INQUIRY.studentUserId);
+  return USER.role === 'landlord'
+    && INQUIRY.landlordUserId != null
+    && String(USER.id) === String(INQUIRY.landlordUserId);
+}
+
+function createListingRouter({ pool: PG_POOL, requireAuthenticated, requireRole, sameOrigin }) {
   const ROUTER = express.Router();
 
   ROUTER.get('/listings', async (REQUEST, RESPONSE, NEXT) => {
@@ -454,6 +462,11 @@ function createListingRouter({ pool: PG_POOL, requireAuthenticated, requireRole,
       );
       const INQUIRY = RESULT.rows[0];
       await CLIENT.query(
+        `INSERT INTO inquiry_messages (inquiry_id, sender_user_id, message, is_initial, created_at)
+         VALUES ($1, $2, $3, TRUE, $4)`,
+        [INQUIRY.id, REQUEST.user.id, MESSAGE, INQUIRY.createdAt],
+      );
+      await CLIENT.query(
         `INSERT INTO notifications (
            user_id, type, title, message, target_url, source_type, source_id
          ) VALUES ($1, 'inquiry_sent', 'Inquiry sent', $2, '/Frontend/student-dashboard.html', 'listing_inquiry_student', $3)`,
@@ -519,46 +532,166 @@ function createListingRouter({ pool: PG_POOL, requireAuthenticated, requireRole,
     }
   });
 
-  ROUTER.post('/landlord/inquiries/:inquiryId/reply', sameOrigin, requireAuthenticated, requireRole('landlord'), async (REQUEST, RESPONSE, NEXT) => {
+  ROUTER.get('/inquiries/:inquiryId/messages', requireAuthenticated, async (REQUEST, RESPONSE, NEXT) => {
+    const INQUIRY_ID = REQUEST.params.inquiryId;
+    if (!/^\d+$/.test(INQUIRY_ID)) return RESPONSE.status(400).json({ error: 'Choose a valid inquiry.' });
+    const AFTER_ID = REQUEST.query.after === undefined ? null : String(REQUEST.query.after);
+    if (AFTER_ID !== null && !/^\d+$/.test(AFTER_ID)) {
+      return RESPONSE.status(400).json({ error: 'Choose a valid message cursor.' });
+    }
+
+    try {
+      const INQUIRY_RESULT = await PG_POOL.query(
+        `SELECT inquiry.id,
+                inquiry.student_user_id AS "studentUserId",
+                listing.owner_user_id AS "landlordUserId",
+                listing.title AS "listingTitle",
+                inquiry.status
+         FROM listing_inquiries AS inquiry
+         JOIN listings AS listing ON listing.id = inquiry.listing_id
+         WHERE inquiry.id = $1`,
+        [INQUIRY_ID],
+      );
+      const INQUIRY = INQUIRY_RESULT.rows[0];
+      if (!INQUIRY) return RESPONSE.status(404).json({ error: 'Inquiry not found.' });
+      if (!canAccessInquiry(REQUEST.user, INQUIRY)) {
+        return RESPONSE.status(403).json({ error: 'Your account does not have permission to do that.' });
+      }
+
+      const MESSAGES_RESULT = await PG_POOL.query(
+        `SELECT inquiry_message.id::text AS id,
+                inquiry_message.sender_user_id::text AS "senderUserId",
+                sender.name AS "senderName",
+                sender.role AS "senderRole",
+                inquiry_message.message,
+                inquiry_message.created_at AS "createdAt"
+         FROM inquiry_messages AS inquiry_message
+         JOIN users AS sender ON sender.id = inquiry_message.sender_user_id
+         WHERE inquiry_message.inquiry_id = $1
+           AND ($2::bigint IS NULL OR inquiry_message.id > $2::bigint)
+         ORDER BY inquiry_message.id`,
+        [INQUIRY_ID, AFTER_ID],
+      );
+      RESPONSE.json({
+        inquiry: {
+          id: String(INQUIRY.id),
+          listingTitle: INQUIRY.listingTitle,
+          status: INQUIRY.status,
+          canSend: INQUIRY.status !== 'closed',
+        },
+        currentUserId: String(REQUEST.user.id),
+        messages: MESSAGES_RESULT.rows,
+      });
+    } catch (ERROR) {
+      NEXT(ERROR);
+    }
+  });
+
+  ROUTER.post('/inquiries/:inquiryId/messages', sameOrigin, requireAuthenticated, async (REQUEST, RESPONSE, NEXT) => {
     const INQUIRY_ID = REQUEST.params.inquiryId;
     const MESSAGE = typeof REQUEST.body?.message === 'string' ? REQUEST.body.message.trim() : '';
     if (!/^\d+$/.test(INQUIRY_ID)) return RESPONSE.status(400).json({ error: 'Choose a valid inquiry.' });
     if (!MESSAGE || MESSAGE.length > 4000) {
       return RESPONSE.status(400).json({ error: 'Enter a message up to 4000 characters.' });
     }
-    if (!sendEmail) {
-      return RESPONSE.status(503).json({ error: 'Email is not configured. Configure SMTP to send replies.' });
-    }
 
+    let CLIENT;
+    let TRANSACTION_STARTED = false;
     try {
-      const RESULT = await PG_POOL.query(
-        `SELECT listing.title AS "listingTitle",
-                student.name AS "studentName",
-                student.email AS "studentEmail"
+      CLIENT = await PG_POOL.connect();
+      await CLIENT.query('BEGIN');
+      TRANSACTION_STARTED = true;
+      const INQUIRY_RESULT = await CLIENT.query(
+        `SELECT inquiry.id,
+                inquiry.student_user_id AS "studentUserId",
+                listing.owner_user_id AS "landlordUserId",
+                listing.title AS "listingTitle",
+                inquiry.status
          FROM listing_inquiries AS inquiry
          JOIN listings AS listing ON listing.id = inquiry.listing_id
-         JOIN users AS student ON student.id = inquiry.student_user_id
-         WHERE inquiry.id = $1 AND listing.owner_user_id = $2`,
-        [INQUIRY_ID, REQUEST.user.id],
+         WHERE inquiry.id = $1
+         FOR UPDATE OF inquiry`,
+        [INQUIRY_ID],
       );
-      const INQUIRY = RESULT.rows[0];
-      if (!INQUIRY) return RESPONSE.status(404).json({ error: 'Inquiry not found.' });
-
-      try {
-        await sendEmail({
-          to: INQUIRY.studentEmail,
-          replyTo: `${REQUEST.user.name} <${REQUEST.user.email}>`,
-          subject: 'Reply to your Boarda housing inquiry',
-          text: `Hello ${INQUIRY.studentName},\n\n${MESSAGE}\n\n${REQUEST.user.name} sent this message about your inquiry for ${INQUIRY.listingTitle}.\n\nYou can reply to this email to contact the landlord.`,
-        });
-      } catch (ERROR) {
-        console.error('Landlord inquiry email delivery failed:', ERROR.code || ERROR.name);
-        return RESPONSE.status(502).json({ error: 'Could not send the email. Check SMTP configuration and try again.' });
+      const INQUIRY = INQUIRY_RESULT.rows[0];
+      if (!INQUIRY) {
+        await CLIENT.query('ROLLBACK');
+        TRANSACTION_STARTED = false;
+        return RESPONSE.status(404).json({ error: 'Inquiry not found.' });
+      }
+      if (!canAccessInquiry(REQUEST.user, INQUIRY)) {
+        await CLIENT.query('ROLLBACK');
+        TRANSACTION_STARTED = false;
+        return RESPONSE.status(403).json({ error: 'Your account does not have permission to do that.' });
+      }
+      if (INQUIRY.status === 'closed') {
+        await CLIENT.query('ROLLBACK');
+        TRANSACTION_STARTED = false;
+        return RESPONSE.status(409).json({ error: 'This inquiry is closed and cannot receive new messages.' });
       }
 
-      RESPONSE.json({ sent: true });
+      const MESSAGE_RESULT = await CLIENT.query(
+        `INSERT INTO inquiry_messages (inquiry_id, sender_user_id, message)
+         VALUES ($1, $2, $3)
+         RETURNING id::text AS id,
+                   sender_user_id::text AS "senderUserId",
+                   message,
+                   created_at AS "createdAt"`,
+        [INQUIRY_ID, REQUEST.user.id, MESSAGE],
+      );
+      const SAVED_MESSAGE = MESSAGE_RESULT.rows[0];
+
+      if (REQUEST.user.role === 'landlord' && INQUIRY.status !== 'replied') {
+        await CLIENT.query(
+          `UPDATE listing_inquiries
+           SET status = 'replied'
+           WHERE id = $1 AND status IN ('new', 'read')`,
+          [INQUIRY_ID],
+        );
+      }
+
+      const RECIPIENTS = REQUEST.user.role === 'student'
+        ? [{ userId: INQUIRY.landlordUserId, targetUrl: '/Frontend/landlord-dashboard.html#landlord-inquiries' }]
+        : REQUEST.user.role === 'landlord'
+          ? [{ userId: INQUIRY.studentUserId, targetUrl: '/Frontend/student-dashboard.html#student-inquiries' }]
+          : [
+              { userId: INQUIRY.studentUserId, targetUrl: '/Frontend/student-dashboard.html#student-inquiries' },
+              ...(INQUIRY.landlordUserId
+                ? [{ userId: INQUIRY.landlordUserId, targetUrl: '/Frontend/landlord-dashboard.html#landlord-inquiries' }]
+                : []),
+            ];
+      for (const RECIPIENT of RECIPIENTS) {
+        if (!RECIPIENT.userId) continue;
+        await CLIENT.query(
+          `INSERT INTO notifications (
+             user_id, type, title, message, target_url, source_type, source_id
+           ) VALUES (
+             $1, 'inquiry_message', 'New inquiry message', $2, $3, 'inquiry_message', $4
+           )
+           ON CONFLICT (user_id, source_type, source_id) DO NOTHING`,
+          [
+            RECIPIENT.userId,
+            `${REQUEST.user.name} sent a message about ${INQUIRY.listingTitle}.`,
+            RECIPIENT.targetUrl,
+            SAVED_MESSAGE.id,
+          ],
+        );
+      }
+
+      await CLIENT.query('COMMIT');
+      TRANSACTION_STARTED = false;
+      RESPONSE.status(201).json({
+        message: { ...SAVED_MESSAGE, senderName: REQUEST.user.name, senderRole: REQUEST.user.role },
+        currentUserId: String(REQUEST.user.id),
+        inquiryStatus: REQUEST.user.role === 'landlord' && ['new', 'read'].includes(INQUIRY.status)
+          ? 'replied'
+          : INQUIRY.status,
+      });
     } catch (ERROR) {
+      if (CLIENT && TRANSACTION_STARTED) await CLIENT.query('ROLLBACK').catch(() => {});
       NEXT(ERROR);
+    } finally {
+      CLIENT?.release();
     }
   });
 

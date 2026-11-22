@@ -75,6 +75,7 @@ function renderSavedListing(LISTING) {
 
 function renderInquiry(INQUIRY) {
   const ITEM = dashboardElement('article', 'dashboard-list-item');
+  ITEM.id = `inquiry-${INQUIRY.id}`;
   const HEADER = dashboardElement('div', 'dashboard-list-item-heading');
   const TITLE = dashboardElement('h3');
   const LINK = dashboardElement('a', '', INQUIRY.listingTitle || 'Boarding house');
@@ -87,6 +88,7 @@ function renderInquiry(INQUIRY) {
     year: 'numeric', month: 'short', day: 'numeric',
   }) : '';
   ITEM.append(dashboardElement('p', 'dashboard-meta', DATE));
+  ITEM.append(window.createInquiryChat(INQUIRY));
   return ITEM;
 }
 

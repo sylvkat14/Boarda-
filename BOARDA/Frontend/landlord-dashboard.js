@@ -237,6 +237,7 @@ async function loadLandlordListings() {
 
 function renderLandlordInquiry(INQUIRY) {
   const ITEM = landlordElement('article', 'dashboard-list-item landlord-inquiry-item');
+  ITEM.id = `inquiry-${INQUIRY.id}`;
   const HEADER = landlordElement('div', 'dashboard-list-item-heading');
   HEADER.append(
     landlordElement('h3', '', INQUIRY.listingTitle || 'Boarding house'),
@@ -246,13 +247,7 @@ function renderLandlordInquiry(INQUIRY) {
 
   const CONTACT = landlordElement('p', 'landlord-inquiry-contact');
   CONTACT.append(document.createTextNode(`${INQUIRY.studentName || 'Student'} · `));
-  const EMAIL = landlordElement('a', '', INQUIRY.studentEmail || 'Email unavailable');
-  if (INQUIRY.studentEmail) {
-    EMAIL.href = `mailto:${INQUIRY.studentEmail}?subject=${encodeURIComponent(`Boarda inquiry: ${INQUIRY.listingTitle || 'boarding house'}`)}`;
-  } else {
-    EMAIL.removeAttribute('href');
-  }
-  CONTACT.append(EMAIL);
+  CONTACT.append(document.createTextNode(INQUIRY.studentEmail || 'Email unavailable'));
   ITEM.append(CONTACT);
   ITEM.append(landlordElement('p', 'dashboard-inquiry-message', INQUIRY.message || 'No message provided.'));
 
@@ -264,70 +259,7 @@ function renderLandlordInquiry(INQUIRY) {
   ITEM.append(TIME);
 
   const ACTIONS = landlordElement('div', 'dashboard-card-actions landlord-inquiry-actions');
-  const REPLY_FORM = document.createElement('form');
-  REPLY_FORM.className = 'dashboard-form landlord-email-reply-form';
-  REPLY_FORM.hidden = true;
-  REPLY_FORM.id = `landlord-inquiry-reply-${INQUIRY.id}`;
-
-  if (INQUIRY.studentEmail) {
-    const EMAIL_BUTTON = landlordElement('button', 'button-secondary', 'Email student');
-    EMAIL_BUTTON.type = 'button';
-    EMAIL_BUTTON.setAttribute('aria-expanded', 'false');
-    EMAIL_BUTTON.setAttribute('aria-controls', REPLY_FORM.id);
-    EMAIL_BUTTON.addEventListener('click', () => {
-      REPLY_FORM.hidden = !REPLY_FORM.hidden;
-      EMAIL_BUTTON.setAttribute('aria-expanded', String(!REPLY_FORM.hidden));
-      if (!REPLY_FORM.hidden) REPLY_FORM.querySelector('textarea').focus();
-    });
-    ACTIONS.append(EMAIL_BUTTON);
-
-    const REPLY_LABEL = landlordElement('label', '', `Message to ${INQUIRY.studentName || 'student'}`);
-    const REPLY_MESSAGE = document.createElement('textarea');
-    REPLY_MESSAGE.name = 'message';
-    REPLY_MESSAGE.rows = 4;
-    REPLY_MESSAGE.maxLength = 4000;
-    REPLY_MESSAGE.required = true;
-    REPLY_MESSAGE.placeholder = 'Write a reply to this inquiry.';
-    REPLY_LABEL.append(REPLY_MESSAGE);
-
-    const REPLY_STATUS = landlordElement('p', 'listing-form-status');
-    REPLY_STATUS.setAttribute('role', 'status');
-    REPLY_STATUS.setAttribute('aria-live', 'polite');
-    const SEND_BUTTON = landlordElement('button', 'button-primary', 'Send email');
-    SEND_BUTTON.type = 'submit';
-    const CANCEL_BUTTON = landlordElement('button', 'button-quiet', 'Cancel');
-    CANCEL_BUTTON.type = 'button';
-    CANCEL_BUTTON.addEventListener('click', () => {
-      REPLY_FORM.hidden = true;
-      EMAIL_BUTTON.setAttribute('aria-expanded', 'false');
-      REPLY_STATUS.textContent = '';
-    });
-
-    REPLY_FORM.append(REPLY_LABEL);
-    const REPLY_ACTIONS = landlordElement('div', 'dashboard-form-actions');
-    REPLY_ACTIONS.append(SEND_BUTTON, CANCEL_BUTTON);
-    REPLY_FORM.append(REPLY_ACTIONS, REPLY_STATUS);
-    REPLY_FORM.addEventListener('submit', async (EVENT) => {
-      EVENT.preventDefault();
-      SEND_BUTTON.disabled = true;
-      CANCEL_BUTTON.disabled = true;
-      REPLY_STATUS.textContent = 'Sending email…';
-      try {
-        await landlordRequest(`/api/landlord/inquiries/${encodeURIComponent(INQUIRY.id)}/reply`, {
-          method: 'POST',
-          body: JSON.stringify({ message: REPLY_MESSAGE.value }),
-        });
-        REPLY_MESSAGE.value = '';
-        REPLY_STATUS.textContent = `Email sent to ${INQUIRY.studentEmail}.`;
-      } catch (ERROR) {
-        REPLY_STATUS.textContent = ERROR.message;
-      } finally {
-        SEND_BUTTON.disabled = false;
-        CANCEL_BUTTON.disabled = false;
-      }
-    });
-    ITEM.append(REPLY_FORM);
-  }
+  ACTIONS.append(window.createInquiryChat(INQUIRY));
 
   const ADD_STATUS_ACTION = (STATUS, LABEL, CLASS_NAME) => {
     const BUTTON = landlordElement('button', CLASS_NAME, LABEL);
@@ -372,6 +304,7 @@ async function loadLandlordInquiries() {
       EMPTY.append(landlordElement('p', '', 'No student inquiries yet. New messages about your listings will appear here.'));
       LANDLORD_INQUIRIES_STATUS.textContent = '';
     }
+    if (window.location.hash === '#landlord-inquiries') activateLandlordTab('landlord-inquiries-tab');
   } catch (ERROR) {
     LANDLORD_INQUIRIES.replaceChildren();
     LANDLORD_INQUIRIES_STATUS.textContent = ERROR.message;

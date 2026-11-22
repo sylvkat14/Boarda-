@@ -28,7 +28,7 @@ Open <http://localhost:8000/>. Express serves the frontend and API from the same
 
 Password recovery emails a one-time link that expires after one hour. Reset tokens are stored as hashes, and a successful reset invalidates all active sessions for that account. The request response does not reveal whether the email address is registered. Requests are limited to five per IP address every 15 minutes.
 
-Configure SMTP in `.env` to enable delivery:
+SMTP is optional. Configure it in `.env` to enable password-recovery email delivery:
 
 ```env
 APP_BASE_URL=http://localhost:8000
@@ -40,7 +40,7 @@ SMTP_PASS=your-smtp-password
 SMTP_FROM=Boarda <noreply@example.com>
 ```
 
-Use the SMTP host, port, TLS mode, username, and password from your email provider. For example, Gmail requires an app password and uses `smtp.gmail.com`; set port `465` with `SMTP_SECURE=true`, or port `587` with `SMTP_SECURE=false`. Set `APP_BASE_URL` to the public Boarda origin when deploying. Recovery endpoints are `POST /api/auth/password-reset/request` and `POST /api/auth/password-reset/complete`. If SMTP is not configured, the request endpoint returns a configuration error rather than pretending an email was sent.
+Use the SMTP host, port, TLS mode, username, and password from your email provider. For example, Gmail requires an app password and uses `smtp.gmail.com`; set port `465` with `SMTP_SECURE=true`, or port `587` with `SMTP_SECURE=false`. Set `APP_BASE_URL` to the public Boarda origin when deploying. SMTP is not required for chat or for starting the app. Incomplete or invalid SMTP settings disable password-recovery email and log a warning without preventing startup; the recovery request endpoint returns a configuration error rather than pretending an email was sent.
 
 ## Account API
 
@@ -57,7 +57,8 @@ Use the SMTP host, port, TLS mode, username, and password from your email provid
 - `GET /api/listings/:id-or-slug` returns one published listing.
 - `GET /api/landlord/listings` returns the signed-in landlord's listings, including drafts and archived listings.
 - `GET /api/landlord/inquiries` returns student inquiries for the signed-in landlord's listings.
-- `POST /api/landlord/inquiries/:inquiryId/reply` emails a reply to the student who sent an inquiry. It accepts a `message` of up to 4000 characters and requires SMTP configuration.
+- `GET /api/inquiries/:inquiryId/messages` returns messages for an inquiry to its student, listing landlord, or an admin. An optional numeric `after` query parameter returns newer messages only.
+- `POST /api/inquiries/:inquiryId/messages` saves a message of up to 4000 characters and notifies the other conversation participants in Boarda.
 - `PATCH /api/landlord/inquiries/:inquiryId/status` marks an owned inquiry as `read` or `closed`. Reading a new inquiry notifies the student.
 - `POST /api/listings` creates a listing for the signed-in landlord. It accepts `title`, `location`, and numeric `monthly_price`, plus optional `description`, `room_type`, `contact_name`, `contact_phone`, `contact_email`, `photos`, and `amenities`.
 - `PATCH /api/listings/:id` updates only a listing owned by the signed-in landlord.
@@ -76,4 +77,4 @@ The existing six sample boarding houses are loaded from `database/seed-listings.
 
 ## Dashboards
 
-After registration or sign-in, students are sent to `Frontend/student-dashboard.html` to manage saved homes and review inquiries. Landlords are sent to `Frontend/landlord-dashboard.html` to create, edit, publish, draft, or archive their own listings, and to review, email, mark read, or close student inquiries. Email replies use the configured SMTP account, with the landlord set as the reply-to address. Dashboard endpoints use the account session cookie and enforce the matching account role.
+After registration or sign-in, students are sent to `Frontend/student-dashboard.html` to manage saved homes, review inquiries, and chat with the landlord. Landlords are sent to `Frontend/landlord-dashboard.html` to create, edit, publish, draft, or archive their own listings, and to review and chat with students. Admins can view and join inquiry conversations from their dashboard. Messages are stored in PostgreSQL and new messages create in-app notifications; chat does not depend on SMTP. Dashboard endpoints use the account session cookie and enforce the matching account role.

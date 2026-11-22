@@ -241,7 +241,8 @@ async function loadInquiries() {
         const meta = document.createElement('p');
         meta.className = 'admin-inquiry-meta';
         meta.textContent = `Landlord: ${inquiry.owner_name || 'Unassigned'} · ${formatDate(inquiry.created_at)}`;
-        item.append(heading, message, meta);
+        item.id = `inquiry-${inquiry.id}`;
+        item.append(heading, message, meta, window.createInquiryChat({ id: inquiry.id }));
         return item;
       }));
     }
