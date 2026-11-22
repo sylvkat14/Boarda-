@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Review your saved boarding houses and landlord inquiries on Boarda.">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-interactions.js" defer></script>
+    <script src="student-dashboard.js" defer></script>
+    <title>Student Dashboard | Boarda</title>
+  </head>
+  <body>
+    <header>
+      <a href="index.html"><img src="../Images/logo.png" alt="Boarda" width="300"></a>
+    </header>
+    <nav aria-label="primary navigation">
+      <a href="index.html">Home</a>
+      <a href="aboutUs.html">About Us</a>
+      <a href="listings.html">Listings</a>
+      <a href="register.html">Register</a>
+      <a href="login.html">Login</a>
+      <a href="howItWorks.html">How It Works</a>
+    </nav>
+    <main class="dashboard-page">
+      <section class="dashboard-heading">
+        <p class="eyebrow">Student account</p>
+        <h1>Welcome, <span id="student-name">student</span></h1>
+        <p class="subtitle">Keep track of the boarding houses you like and the landlords you contact.</p>
+      </section>
+      <p id="student-dashboard-status" class="dashboard-status" role="status" aria-live="polite">Loading your account…</p>
+
+      <section class="dashboard-section" aria-labelledby="saved-listings-heading">
+        <div class="dashboard-section-heading">
+          <div>
+            <p class="eyebrow">Your shortlist</p>
+            <h2 id="saved-listings-heading">Saved homes</h2>
+          </div>
+          <a class="dashboard-text-link" href="listings.html">Browse homes</a>
+        </div>
+        <div id="student-saved-listings" class="dashboard-card-grid"></div>
+      </section>
+
+      <section class="dashboard-section" aria-labelledby="student-inquiries-heading">
+        <div class="dashboard-section-heading">
+          <div>
+            <p class="eyebrow">Conversations</p>
+            <h2 id="student-inquiries-heading">Your inquiries</h2>
+          </div>
+        </div>
+        <div id="student-inquiries" class="dashboard-list"></div>
+      </section>
+    </main>
+    <footer>
+      <nav aria-label="footer navigation">
+        <a href="index.html">Home</a>
+        <a href="aboutUs.html">About Us</a>
+        <a href="listings.html">Listings</a>
+        <a href="howItWorks.html">How It Works</a>
+        <a href="contactUs.html">Contact Us</a>
+      </nav>
+      <span>&copy; Boarda team 2026. All Rights Reserved.</span>
+    </footer>
+  </body>
+</html>

@@ -1,13 +1,13 @@
 # Boarda backend
 
-The API uses Node.js, Express, and PostgreSQL. `database/schema.sql` defines the account and session tables; the server applies it at startup. Passwords are stored as scrypt hashes, and session tokens are stored as hashes in PostgreSQL.
+The API uses Node.js, Express, and PostgreSQL. `database/schema.sql` defines the account, session, housing listing, listing photo, amenity, saved listing, and listing inquiry tables. The server applies the schema and idempotent sample listing data at startup. Passwords are stored as scrypt hashes, and session tokens are stored as hashes in PostgreSQL.
 
 ## Connect PostgreSQL with SQLTools
 
 1. Make sure a PostgreSQL server is running and install the SQLTools extension plus its PostgreSQL/CockroachDB driver in VS Code.
 2. In SQLTools, add a PostgreSQL connection using your server host, port (`5432` by default), username, and password. Connect to the default `postgres` database first if the `boarda` database does not exist.
 3. Create the app database with `CREATE DATABASE boarda;`, then add a SQLTools connection to the `boarda` database.
-4. Open `database/schema.sql` on that connection and run it. The Express server also applies this schema when it starts.
+4. Open `database/schema.sql` on that connection and run it. The Express server also applies this schema when it starts. The script uses `IF NOT EXISTS`, so it can be run again to add missing tables safely.
 
 SQLTools is the VS Code client for inspecting and querying the database; the Express app connects through the Node `pg` driver. Keep the database password in `.env` or SQLTools' saved credentials, not in source files.
 
@@ -22,7 +22,7 @@ npm install
 npm start
 ```
 
-Open <http://127.0.0.1:8000/>. Express serves the frontend and API from the same origin. The server requires Node.js 18 or newer. Set `HOST=0.0.0.0` if the development server needs to be reached from another device.
+Open <http://localhost:8000/>. Express serves the frontend and API from the same origin. The server requires Node.js 18 or newer. Set `HOST=0.0.0.0` if the development server needs to be reached from another device.
 
 ## Account API
 
@@ -30,3 +30,29 @@ Open <http://127.0.0.1:8000/>. Express serves the frontend and API from the same
 - `POST /api/auth/login` accepts `email` and `password`.
 - `GET /api/auth/me` returns the signed-in user, or `401` when there is no valid session.
 - `POST /api/auth/logout` invalidates the current session.
+
+## Listing API
+
+- `GET /api/listings` returns published listings. Optional filters are `location`, `min_price`, `max_price`, `room_type`, and repeated `amenity` values.
+- `GET /api/listings/:id-or-slug` returns one published listing.
+- `GET /api/landlord/listings` returns the signed-in landlord's listings, including drafts and archived listings.
+- `GET /api/landlord/inquiries` returns student inquiries for the signed-in landlord's listings.
+- `PATCH /api/landlord/inquiries/:inquiryId/status` marks an owned inquiry as `read` or `closed`. Reading a new inquiry notifies the student.
+- `POST /api/listings` creates a listing for the signed-in landlord. It accepts `title`, `location`, and numeric `monthly_price`, plus optional `description`, `room_type`, `contact_name`, `contact_phone`, `contact_email`, `photos`, and `amenities`.
+- `PATCH /api/listings/:id` updates only a listing owned by the signed-in landlord.
+- `DELETE /api/listings/:id` archives only a listing owned by the signed-in landlord.
+- `GET /api/student/dashboard` returns the signed-in student's saved homes and inquiry history.
+- `POST /api/student/saved-listings` saves a published listing for the signed-in student; send `listingId`.
+- `DELETE /api/student/saved-listings/:id` removes a saved listing owned by the signed-in student.
+- `POST /api/student/inquiries` sends an inquiry about a published listing; send `listingId` and `message`.
+
+## Notifications
+
+- `GET /api/notifications` returns the signed-in user's latest notifications and unread count, for either account role.
+- `POST /api/notifications/read` marks the signed-in user's unread notifications as read. When a landlord reads an inquiry, the student also receives a notification.
+
+The existing six sample boarding houses are loaded from `database/seed-listings.sql`. Unknown price, location, and room type values remain empty instead of being guessed. The static frontend's listings page reads from the listing API and supports the same filters as the home-page search.
+
+## Dashboards
+
+After registration or sign-in, students are sent to `Frontend/student-dashboard.html` to manage saved homes and review inquiries. Landlords are sent to `Frontend/landlord-dashboard.html` to create, edit, publish, draft, or archive their own listings, and to review, email, mark read, or close student inquiries. Dashboard endpoints use the account session cookie and enforce the matching account role.

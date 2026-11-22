@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { promisify } = require('node:util');
 const { Pool } = require('pg');
+const createListingRouter = require('./listing-routes');
 
 const BACKEND_DIR = __dirname;
 require('dotenv').config({ path: path.join(BACKEND_DIR, '.env') });
@@ -12,6 +13,7 @@ const APP = express();
 const SCRYPT = promisify(crypto.scrypt);
 const PROJECT_DIR = path.resolve(BACKEND_DIR, '..');
 const SCHEMA_PATH = path.join(BACKEND_DIR, 'database', 'schema.sql');
+const SEED_PATH = path.join(BACKEND_DIR, 'database', 'seed-listings.sql');
 const DATABASE_URL = process.env.DATABASE_URL;
 const COOKIE_NAME = 'boarda_session';
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -110,6 +112,39 @@ function sameOrigin(REQUEST, RESPONSE, NEXT) {
   return RESPONSE.status(403).json({ error: 'This request was not accepted.' });
 }
 
+async function requireAuthenticated(REQUEST, RESPONSE, NEXT) {
+  const TOKEN = readSessionToken(REQUEST);
+  if (!TOKEN) return RESPONSE.status(401).json({ error: 'Sign in to continue.' });
+
+  try {
+    const RESULT = await PG_POOL.query(
+      `SELECT users.id, users.name, users.email, users.role
+       FROM users
+       JOIN sessions ON sessions.user_id = users.id
+       WHERE sessions.token_hash = $1 AND sessions.expires_at > NOW()` ,
+      [tokenHash(TOKEN)],
+    );
+    if (!RESULT.rows[0]) {
+      clearSessionCookie(RESPONSE);
+      return RESPONSE.status(401).json({ error: 'Your session has expired. Sign in again.' });
+    }
+    REQUEST.user = RESULT.rows[0];
+    NEXT();
+  } catch (ERROR) {
+    NEXT(ERROR);
+  }
+}
+
+function requireRole(...ALLOWED_ROLES) {
+  return (REQUEST, RESPONSE, NEXT) => {
+    if (!REQUEST.user) return RESPONSE.status(401).json({ error: 'Sign in to continue.' });
+    if (!ALLOWED_ROLES.includes(REQUEST.user.role)) {
+      return RESPONSE.status(403).json({ error: 'Your account does not have permission to do that.' });
+    }
+    NEXT();
+  };
+}
+
 function validateRegistration(REQUEST, RESPONSE, NEXT) {
   const { name, email, password, role } = REQUEST.body || {};
   if (![name, email, password, role].every((VALUE) => typeof VALUE === 'string')) {
@@ -155,6 +190,11 @@ APP.post('/api/auth/register', sameOrigin, validateRegistration, async (REQUEST,
       [INPUT.name, INPUT.email, INPUT.role, PASSWORD_DATA.salt, PASSWORD_DATA.hash],
     );
     const USER = RESULT.rows[0];
+    await CLIENT.query(
+      `INSERT INTO notifications (user_id, type, title, message, target_url)
+       VALUES ($1, 'welcome', 'Welcome to Boarda', 'Your Boarda account is ready. You can manage your account and explore boarding houses here.', $2)`,
+      [USER.id, USER.role === 'landlord' ? '/Frontend/landlord-dashboard.html' : '/Frontend/student-dashboard.html'],
+    );
     const TOKEN = await issueSession(CLIENT, USER.id);
     await CLIENT.query('COMMIT');
     TRANSACTION_STARTED = false;
@@ -210,27 +250,8 @@ APP.post('/api/auth/login', sameOrigin, async (REQUEST, RESPONSE, NEXT) => {
   }
 });
 
-APP.get('/api/auth/me', async (REQUEST, RESPONSE, NEXT) => {
-  const TOKEN = readSessionToken(REQUEST);
-  if (!TOKEN) return RESPONSE.status(401).json({ user: null });
-
-  try {
-    const RESULT = await PG_POOL.query(
-      `SELECT users.id, users.name, users.email, users.role
-       FROM users
-       JOIN sessions ON sessions.user_id = users.id
-       WHERE sessions.token_hash = $1 AND sessions.expires_at > NOW()`,
-      [tokenHash(TOKEN)],
-    );
-    const USER = RESULT.rows[0];
-    if (!USER) {
-      clearSessionCookie(RESPONSE);
-      return RESPONSE.status(401).json({ user: null });
-    }
-    RESPONSE.json({ user: publicUser(USER) });
-  } catch (ERROR) {
-    NEXT(ERROR);
-  }
+APP.get('/api/auth/me', requireAuthenticated, (REQUEST, RESPONSE) => {
+  RESPONSE.json({ user: publicUser(REQUEST.user) });
 });
 
 APP.post('/api/auth/logout', sameOrigin, async (REQUEST, RESPONSE, NEXT) => {
@@ -243,6 +264,13 @@ APP.post('/api/auth/logout', sameOrigin, async (REQUEST, RESPONSE, NEXT) => {
     NEXT(ERROR);
   }
 });
+
+APP.use('/api', createListingRouter({
+  pool: PG_POOL,
+  requireAuthenticated,
+  requireRole,
+  sameOrigin,
+}));
 
 APP.get('/', (REQUEST, RESPONSE) => RESPONSE.redirect('/Frontend/index.html'));
 APP.use((REQUEST, RESPONSE, NEXT) => {
@@ -266,7 +294,9 @@ APP.use((ERROR, REQUEST, RESPONSE, NEXT) => {
 
 async function startServer() {
   const SCHEMA = fs.readFileSync(SCHEMA_PATH, 'utf8');
+  const SEED_DATA = fs.readFileSync(SEED_PATH, 'utf8');
   await PG_POOL.query(SCHEMA);
+  await PG_POOL.query(SEED_DATA);
   const PORT = Number(process.env.PORT || 8000);
   const HOST = process.env.HOST || '127.0.0.1';
   APP.listen(PORT, HOST, () => {

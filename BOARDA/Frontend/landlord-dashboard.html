@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create and manage your boarding house listings on Boarda.">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-interactions.js" defer></script>
+    <script src="landlord-dashboard.js" defer></script>
+    <title>Landlord Dashboard | Boarda</title>
+  </head>
+  <body>
+    <header>
+      <a href="index.html"><img src="../Images/logo.png" alt="Boarda" width="300"></a>
+    </header>
+    <nav aria-label="primary navigation">
+      <a href="index.html">Home</a>
+      <a href="aboutUs.html">About Us</a>
+      <a href="listings.html">Listings</a>
+      <a href="register.html">Register</a>
+      <a href="login.html">Login</a>
+      <a href="howItWorks.html">How It Works</a>
+    </nav>
+    <main class="dashboard-page landlord-dashboard-page">
+      <section class="dashboard-heading">
+        <p class="eyebrow">Landlord account</p>
+        <h1>Welcome, <span id="landlord-name">landlord</span></h1>
+        <p class="subtitle">Publish and manage the boarding houses you offer to students.</p>
+      </section>
+      <p id="landlord-dashboard-status" class="dashboard-status" role="status" aria-live="polite">Loading your account…</p>
+
+      <nav class="landlord-dashboard-nav" aria-label="Landlord dashboard sections">
+        <a href="#landlord-overview">Overview</a>
+        <a href="#landlord-create-listing">Create listing</a>
+        <a href="#landlord-listings-section">Listings</a>
+        <a href="#landlord-inquiries">Conversations</a>
+      </nav>
+
+      <section id="landlord-overview" class="dashboard-section landlord-overview" aria-labelledby="landlord-overview-heading">
+        <div class="dashboard-section-heading">
+          <div>
+            <p class="eyebrow">At a glance</p>
+            <h2 id="landlord-overview-heading">Overview</h2>
+          </div>
+        </div>
+        <div class="landlord-overview-grid">
+          <a class="landlord-overview-card" href="#landlord-listings-section">
+            <span class="eyebrow">Published listings</span>
+            <strong id="landlord-published-count">—</strong>
+            <span class="landlord-overview-link">Manage listings <span aria-hidden="true">→</span></span>
+          </a>
+          <a class="landlord-overview-card" href="#landlord-listings-section">
+            <span class="eyebrow">Draft listings</span>
+            <strong id="landlord-draft-count">—</strong>
+            <span class="landlord-overview-link">Review drafts <span aria-hidden="true">→</span></span>
+          </a>
+          <a class="landlord-overview-card" href="#landlord-inquiries">
+            <span class="eyebrow">New conversations</span>
+            <strong id="landlord-new-inquiries-count">—</strong>
+            <span class="landlord-overview-link">View inquiries <span aria-hidden="true">→</span></span>
+          </a>
+        </div>
+      </section>
+
+      <section id="landlord-create-listing" class="dashboard-section landlord-form-section" aria-labelledby="listing-form-heading">
+        <div class="dashboard-section-heading">
+          <div>
+            <p class="eyebrow">Property details</p>
+            <h2 id="listing-form-heading">Create a listing</h2>
+          </div>
+        </div>
+        <form id="landlord-listing-form" class="dashboard-form">
+          <div class="dashboard-form-grid">
+            <div>
+              <label for="listing-title">Listing title</label>
+              <input id="listing-title" name="title" type="text" maxlength="150" required>
+            </div>
+            <div>
+              <label for="listing-location">Location or campus area</label>
+              <input id="listing-location" name="location" type="text" maxlength="255" required>
+            </div>
+            <div>
+              <label for="listing-price">Monthly price (ZMW)</label>
+              <input id="listing-price" name="monthly_price" type="number" min="1" max="100000000" step="1" required>
+            </div>
+            <div>
+              <label for="listing-room-type">Room type</label>
+              <select id="listing-room-type" name="room_type">
+                <option value="">Not specified</option>
+                <option value="single">Single</option>
+                <option value="shared">Shared</option>
+                <option value="self-contained">Self-contained</option>
+              </select>
+            </div>
+            <div>
+              <label for="listing-status">Status</label>
+              <select id="listing-status" name="status">
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+              </select>
+            </div>
+            <div>
+              <label for="listing-contact-name">Contact name</label>
+              <input id="listing-contact-name" name="contact_name" type="text" maxlength="100">
+            </div>
+            <div>
+              <label for="listing-contact-phone">Contact phone</label>
+              <input id="listing-contact-phone" name="contact_phone" type="tel" maxlength="32">
+            </div>
+            <div>
+              <label for="listing-contact-email">Contact email</label>
+              <input id="listing-contact-email" name="contact_email" type="email" maxlength="254">
+            </div>
+          </div>
+          <label for="listing-description">Description</label>
+          <textarea id="listing-description" name="description" rows="5" maxlength="5000" placeholder="Describe the rooms, nearby services, and what is included."></textarea>
+
+          <fieldset class="dashboard-amenity-options">
+            <legend>Amenities</legend>
+            <label><input type="checkbox" name="amenities" value="wifi"> Wi-Fi</label>
+            <label><input type="checkbox" name="amenities" value="water"> Water</label>
+            <label><input type="checkbox" name="amenities" value="furnished"> Furnished</label>
+            <label><input type="checkbox" name="amenities" value="security-24-7"> 24/7 security</label>
+          </fieldset>
+
+          <div class="listing-photo-upload">
+            <label for="listing-photo-files">Property photos</label>
+            <input id="listing-photo-files" name="photo_files" type="file" accept="image/jpeg,image/png,image/webp" multiple aria-describedby="listing-photo-help">
+            <p id="listing-photo-help" class="form-help">Choose up to 10 JPEG, PNG, or WebP photos. Each photo can be up to 5 MB.</p>
+            <div id="listing-photo-preview" class="listing-photo-preview" aria-label="Selected property photos"></div>
+          </div>
+          <p id="listing-form-status" class="listing-form-status" role="status" aria-live="polite"></p>
+          <div class="dashboard-form-actions">
+            <button id="save-listing-button" type="submit">Publish listing</button>
+            <button id="cancel-listing-edit" class="button-secondary" type="button" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="landlord-listings-section" class="dashboard-section" aria-labelledby="landlord-listings-heading">
+        <div class="dashboard-section-heading">
+          <div>
+            <p class="eyebrow">Your properties</p>
+            <h2 id="landlord-listings-heading">Your listings</h2>
+          </div>
+        </div>
+        <div id="landlord-listings" class="dashboard-card-grid"></div>
+      </section>
+
+      <section id="landlord-inquiries" class="dashboard-section" aria-labelledby="landlord-inquiries-heading">
+        <div class="dashboard-section-heading">
+          <div>
+            <p class="eyebrow">Conversations</p>
+            <h2 id="landlord-inquiries-heading">Student inquiries</h2>
+          </div>
+        </div>
+        <p id="landlord-inquiries-status" class="dashboard-status" role="status" aria-live="polite">Loading student inquiries…</p>
+        <div id="landlord-inquiries-list" class="dashboard-list"></div>
+      </section>
+    </main>
+    <footer>
+      <nav aria-label="footer navigation">
+        <a href="index.html">Home</a>
+        <a href="aboutUs.html">About Us</a>
+        <a href="listings.html">Listings</a>
+        <a href="howItWorks.html">How It Works</a>
+        <a href="contactUs.html">Contact Us</a>
+      </nav>
+      <span>&copy; Boarda team 2026. All Rights Reserved.</span>
+    </footer>
+  </body>
+</html>
